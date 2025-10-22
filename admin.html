@@ -9,9 +9,10 @@
 </head>
 <body>
 
-    <header>
-        <h1>Panel de Administración</h1>
-    </header>
+<header>
+    <a href="index.html" class="back-home-link">← Volver al Home</a>
+    <h1>Panel de Administración</h1>
+    <span></span> </header>
 
     <main>
         <section id="login-section" class="card">
@@ -28,45 +29,93 @@
             <p id="error-login" class="error-msg"></p>
         </section>
 
-        <section id="admin-dashboard" class="card" style="display: none;">
-            <h2>Bienvenida, Dra.</h2>
-            <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
+        <section id="admin-dashboard" style="display: none;">
             
-            <hr>
-
-            <h3>Agendar Nuevo Turno</h3>
-            <form id="turno-form">
-                <label for="paciente">Nombre y Apellido Paciente:</label>
-                <input type="text" id="paciente" required>
-
-                <label for="estudio">Tipo de Estudio:</label>
-                <input type="text" id="estudio" required>
-
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" required>
-
-                <label for="hora">Hora:</label>
-                <input type="time" id="hora" step="900" required> <button type="submit" class="btn">Agendar Turno</button>
-            </form>
-            <p id="success-turno" class="success-msg"></p>
-
-            <hr>
-
-            <h3>Turnos Agendados</h3>
-            <div class="tabla-container">
-                <table id="turnos-table">
-                    <thead>
-                        <tr>
-                            <th>Paciente</th>
-                            <th>Estudio</th>
-                            <th>Fecha y Hora</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="turnos-tbody">
-                        </tbody>
-                </table>
+            <div class="admin-header">
+                <h2>Bienvenida, Dra. Luna</h2>
+                <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
             </div>
+
+            <div class="admin-tabs">
+                <button id="tab-turnos" class="tab-btn active">Agenda y Próximos Turnos</button>
+                <button id="tab-historico" class="tab-btn">Histórico de Pacientes</button>
+            </div>
+
+            <div id="panel-turnos" class="tab-panel">
+                <div class="admin-columna">
+                    <h3>Agendar Nuevo Turno</h3>
+                    <form id="turno-form" class="card">
+                        <label for="paciente">Nombre y Apellido Paciente:</label>
+                        <input type="text" id="paciente" required>
+
+                        <label for="estudio">Tipo de Estudio:</label>
+                        <select id="estudio" required>
+                            <option value="" disabled selected>Selecciona un estudio...</option>
+                            <option value="Ecografía Abdominal">Ecografía Abdominal</option>
+                            <option value="Ecografía Ginecológica">Ecografía Ginecológica</option>
+                            <option value="Ecografía Obstétrica">Ecografía Obstétrica</option>
+                            <option value="Ecografía 4D/5D">Ecografía 4D/5D</option>
+                            <option value="Ecografía Mamaria">Ecografía Mamaria</option>
+                            <option value="Ecografía Musculoesquelética">Ecografía Musculoesquelética</option>
+                            <option value="Doppler Vascular">Doppler Vascular</option>
+                            <option value="Ecografía Pediátrica">Ecografía Pediátrica</option>
+                            <option value="Otro">Otro (especificar)</option>
+                        </select>
+
+                        <label for="costo">Costo ($):</label>
+                        <input type="number" id="costo" min="0" placeholder="Ej: 5000" required>
+
+                        <label for="fecha">Fecha (Calendario):</label>
+                        <input type="date" id="fecha" required>
+
+                        <label for="hora">Hora (cada 15 min):</label>
+                        <select id="hora" required>
+                            </select>
+
+                        <button type="submit" class="btn">Agendar Turno</button>
+                        <p id="error-turno" class="error-msg"></p>
+                        <p id="success-turno" class="success-msg"></p>
+                    </form>
+                </div>
+                <div class="admin-columna">
+                    <h3>Próximos Turnos Agendados</h3>
+                    <div class="tabla-container card">
+                        <table id="turnos-table">
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Estudio</th>
+                                    <th>Fecha y Hora</th>
+                                    <th>Costo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="turnos-tbody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-historico" class="tab-panel" style="display: none;">
+                <h3>Histórico de Pacientes</h3>
+                <div class="tabla-container card">
+                    <table id="historico-table">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Estudio</th>
+                                <th>Fecha y Hora</th>
+                                <th>Costo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historico-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
         </section>
     </main>
 

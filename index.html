@@ -3,56 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dra. [Apellido de tu mamá] - Diagnóstico por Imágenes</title>
+    <title>Dra. Daniela Luna - Consultorio Luna</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Dra. [Nombre y Apellido]</h1>
-        <p>Especialista en Diagnóstico por Imágenes</p>
+    <header class="main-header">
+        <div class="logo">Consultorio Luna</div>
+        <nav>
+            <a href="#hero">Inicio</a>
+            <a href="#sobre-mi">Sobre Mí</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#contacto">Contacto</a>
+            </nav>
     </header>
 
-    <nav>
-        <a href="#sobre-mi">Sobre Mí</a>
-        <a href="#servicios">Servicios</a>
-        <a href="#contacto">Contacto</a>
-    </nav>
+    <section id="hero" class="hero-section">
+        <div class="hero-content">
+            <h1>Cuida de tu bienestar</h1>
+            <p>Precisión y confianza en cada ecografía con la Dra. Daniela Luna.</p>
+            <a href="https://api.whatsapp.com/send?phone=543516119477" target="_blank" class="btn">Agenda tu turno!</a>
+        </div>
+    </section>
 
-    <main>
-        <section id="sobre-mi" class="card">
-            <h2>Mi Trayectoria y Dedicación</h2>
-            <p>Aquí puedes escribir un párrafo sobre su experiencia, su trabajo en el hospital público, los centros privados y su dedicación a los pacientes...</p>
+<main>
+        
+        <div class="two-column-layout">
+            <section id="sobre-mi" class="column-card">
+                <div class="content-wrapper image-card">
+                    <div class="image-wrapper">
+                        <img src="http://imgfz.com/i/bcdNzFs.jpeg" alt="Dra. Daniela Luna">
+                    </div>
+                    <div class="card-content">
+                        <h2>Mi Trayectoria y Dedicación</h2>
+                        <p>Soy la <strong>Dra. Daniela Luna</strong>. Con más de XX años de experiencia en el campo del diagnóstico por imágenes, me dedico a ofrecer un servicio de alta calidad, combinando mi expertise en hospitales públicos y centros privados. Mi compromiso es proporcionar diagnósticos precisos y comprensibles, siempre con un enfoque humano y empático hacia cada paciente.</p>
+                    </div>
+                </div>
             </section>
 
-        <section id="servicios" class="card">
-            <h2>Estudios y Servicios</h2>
-            <ul>
-                <li>Tomografías Computadas (TC)</li>
-                <li>Resonancias Magnéticas (RM)</li>
-                <li>Ecografías</li>
-                <li>Radiografías</li>
-                </ul>
-        </section>
-
-        <section id="contacto" class="card">
-            <h2>Contacto</h2>
-            <p>Para consultas, puedes contactarme directamente:</p>
-            <div class="botones-contacto">
-                <a href="https://api.whatsapp.com/send?phone=549..." target="_blank" class="btn">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="20">
-                    Enviar WhatsApp
-                </a>
-                <a href="mailto:emaildetumama@gmail.com" class="btn btn-secondary">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail" width="20">
-                    Enviar Gmail
-                </a>
+            <section id="servicios" class="column-card">
+                <h2>Nuestro Servicio Principal</h2>
+                <div class="content-wrapper image-card reverse"> 
+                    <div class="image-wrapper">
+                        <img src="http://imgfz.com/i/Vk1EZ8H.jpeg" alt="Equipo de Ecografía">
+                    </div>
+                    <div class="card-content">
+                        <h3>Ecografías</h3>
+                        <p>Nos especializamos en estudios ecográficos, utilizando tecnología de punta para ofrecer diagnósticos precisos y en tiempo real. Este método no invasivo es fundamental para visualizar órganos, tejidos y el flujo sanguíneo.</p>
+                        <p>Ofrecemos una amplia gama de estudios, incluyendo:</p>
+                        <ul>
+                            <li>Ecografías Abdominales</li>
+                            <li>Ecografías Ginecológicas y Obstétricas (4D/5D)</li>
+                            <li>Ecografías Mamarias</li>
+                            <li>Ecografías Musculoesqueléticas</li>
+                            <li>Doppler Vascular</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <section id="contacto">
+            <div class="content-wrapper card">
+                <h2>Contacto</h2>
+                <p>Para consultas, puedes contactarme directamente:</p>
+                <div class="botones-contacto">
+                    <a href="https://api.whatsapp.com/send?phone=549..." target="_blank" class="btn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="20">
+                        Enviar WhatsApp
+                    </a>
+                    <a href="mailto:emaildetumama@gmail.com" class="btn btn-secondary">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail" width="20">
+                        Enviar Gmail
+                    </a>
+                </div>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>© 2025 Dra. [Apellido] - <a href="admin.html">Admin</a></p>
+        <p>© 2025 Dra. Daniela Luna - Consultorio Luna | <a href="admin.html">Admin</a></p>
     </footer>
 
     <script src="main.js"></script>
