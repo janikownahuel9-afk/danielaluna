@@ -143,17 +143,24 @@ tabHistorico.addEventListener('click', () => {
 // --- 5. Lógica de la Agenda (CRUD) ---
 
 /**
- * Carga SÓLO los próximos turnos
+ * Carga SÓLO los próximos turnos (CORREGIDO)
  */
 async function cargarTurnos() {
-    turnosTbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
+    turnosTbody.innerHTML = `<tr><td colspan("5">Cargando...</td></tr>`;
 
-    const hoy = new Date().toISOString(); // Fecha y hora de ahora
+    // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+    // 1. Creamos un objeto de fecha para "hoy"
+    const hoy = new Date();
+    // 2. Lo configuramos a las 00:00:00 de la mañana
+    hoy.setHours(0, 0, 0, 0);
+    // 3. Convertimos esa fecha de inicio del día a un string ISO
+    const filtroFechaISO = hoy.toISOString();
+    // --- FIN DE LA CORRECCIÓN ---
 
     const { data: turnos, error } = await supabase
         .from('turnos')
         .select('*')
-        .gte('fecha_hora', hoy) // gte = "mayor o igual que" (sólo futuros)
+        .gte('fecha_hora', filtroFechaISO) // <-- USAMOS LA NUEVA VARIABLE
         .order('fecha_hora', { ascending: true }); 
 
     if (error) {
