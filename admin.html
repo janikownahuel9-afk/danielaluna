@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración</title>
+    <title>Panel de Administración - Dra. Luna</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<header>
-    <a href="index.html" class="back-home-link">← Volver al Home</a>
-    <h1>Panel de Administración</h1>
-    <span></span> </header>
+    <header>
+        <a href="index.html" class="back-home-link">← Volver al Home</a>
+        <h1>Panel de Administración</h1>
+        <span></span>
+    </header>
 
     <main>
         <section id="login-section" class="card">
@@ -37,8 +38,9 @@
             </div>
 
             <div class="admin-tabs">
-                <button id="tab-turnos" class="tab-btn active">Agenda y Próximos Turnos</button>
-                <button id="tab-historico" class="tab-btn">Histórico de Pacientes</button>
+                <button id="tab-turnos" class="tab-btn active">Agenda</button>
+                <button id="tab-historico" class="tab-btn">Histórico</button>
+                <button id="tab-estadisticas" class="tab-btn">Estadísticas</button>
             </div>
 
             <div id="panel-turnos" class="tab-panel">
@@ -78,7 +80,7 @@
                     </form>
                 </div>
                 <div class="admin-columna">
-                    <h3>Próximos Turnos Agendados</h3>
+                    <h3>Próximos Turnos</h3>
                     <div class="tabla-container card">
                         <table id="turnos-table">
                             <thead>
@@ -90,8 +92,7 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="turnos-tbody">
-                                </tbody>
+                            <tbody id="turnos-tbody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -110,7 +111,42 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="historico-tbody">
+                        <tbody id="historico-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-estadisticas" class="tab-panel" style="display: none;">
+                
+                <h3>Resumen General</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Ingresos Totales (Histórico)</span>
+                        <span class="stat-number" id="stat-total-dinero">$0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Pacientes Atendidos</span>
+                        <span class="stat-number" id="stat-total-pacientes">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Estudio Más Solicitado</span>
+                        <span class="stat-number text-medium" id="stat-top-estudio">-</span>
+                    </div>
+                </div>
+
+                <h3>Ingresos Mensuales</h3>
+                <div class="tabla-container card">
+                    <table id="stats-table">
+                        <thead>
+                            <tr>
+                                <th>Año</th>
+                                <th>Mes</th>
+                                <th>Pacientes</th>
+                                <th>Total Generado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats-tbody">
                             </tbody>
                     </table>
                 </div>
