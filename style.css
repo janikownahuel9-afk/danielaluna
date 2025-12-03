@@ -460,4 +460,50 @@ header span {
     color: var(--blanco);
     transform: translateY(-3px); /* Un poco más de movimiento */
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+
+}
+/* --- ESTILOS PARA EL PANEL DE ESTADÍSTICAS --- */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: var(--blanco);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--sombra);
+    text-align: center;
+    border-bottom: 4px solid var(--turquesa); /* Detalle de color */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.stat-number {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: var(--gris-oscuro);
+}
+
+.stat-number.text-medium {
+    font-size: 1.5em; /* Un poco más chico para texto largo */
+    color: var(--turquesa);
+}
+
+/* Alineación para la tabla de estadísticas */
+#stats-table th, #stats-table td {
+    text-align: center; /* Centrar los números en la tabla */
 }
