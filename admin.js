@@ -3,8 +3,11 @@
 const SUPABASE_URL = 'https://xyckhqxcipgdvkdmjifg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5Y2tocXhjaXBnZHZrZG1qaWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwOTUxNzYsImV4cCI6MjA3NjY3MTE3Nn0.UvFfrKlXaW1bEPuXJfNw6mFU7JyfWDmAPF3GIfgJRtI';
 
+
+
+
 const { createClient } = window.supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- 2. Referencias a elementos del DOM ---
 const loginSection = document.getElementById('login-section');
@@ -351,3 +354,4 @@ const manejarEliminacion = async (e, callbackRecarga) => {
 
 turnosTbody.addEventListener('click', (e) => manejarEliminacion(e, cargarTurnos));
 historicoTbody.addEventListener('click', (e) => manejarEliminacion(e, cargarHistorico));
+
