@@ -39,7 +39,7 @@
 
             <div class="admin-tabs">
                 <button id="tab-turnos" class="tab-btn active">Agenda</button>
-                <button id="tab-historico" class="tab-btn">Histórico</button>
+                <button id="tab-facturacion" class="tab-btn">Facturación Externa</button> <button id="tab-historico" class="tab-btn">Histórico</button>
                 <button id="tab-estadisticas" class="tab-btn">Estadísticas</button>
             </div>
 
@@ -98,8 +98,53 @@
                 </div>
             </div>
 
+            <div id="panel-facturacion" class="tab-panel" style="display: none;">
+                <div class="admin-columna">
+                    <h3>Registrar Pago Externo</h3>
+                    <form id="facturacion-form" class="card">
+                        <label for="sede-externa">Sede:</label>
+                        <select id="sede-externa" required>
+                            <option value="" disabled selected>Selecciona la sede...</option>
+                            <option value="Ospia">Ospia (Pago Mensual)</option>
+                            <option value="Ferreyra">Ferreyra (Pago Diario)</option>
+                        </select>
+
+                        <label for="fecha-externa">Fecha del cobro/trabajo:</label>
+                        <input type="date" id="fecha-externa" required>
+
+                        <label for="monto-externa">Monto Cobrado ($):</label>
+                        <input type="number" id="monto-externa" min="0" required>
+
+                        <label for="notas-externa">Notas (Opcional):</label>
+                        <input type="text" id="notas-externa" placeholder="Ej: Pago de guardia, horas extra...">
+
+                        <button type="submit" class="btn">Registrar Ingreso</button>
+                        <p id="error-facturacion" class="error-msg"></p>
+                        <p id="success-facturacion" class="success-msg"></p>
+                    </form>
+                </div>
+                
+                <div class="admin-columna">
+                    <h3>Últimos Registros Externos</h3>
+                    <div class="tabla-container card">
+                        <table id="facturacion-table">
+                            <thead>
+                                <tr>
+                                    <th>Sede</th>
+                                    <th>Fecha</th>
+                                    <th>Monto</th>
+                                    <th>Notas</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facturacion-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div id="panel-historico" class="tab-panel" style="display: none;">
-                <h3>Histórico de Pacientes</h3>
+                <h3>Histórico de Pacientes (Consultorio)</h3>
                 <div class="tabla-container card">
                     <table id="historico-table">
                         <thead>
@@ -118,11 +163,10 @@
 
             <div id="panel-estadisticas" class="tab-panel" style="display: none;">
                 
-                <h3>Resumen General</h3>
-                
+                <h3>Resumen General (Consultorio Propio)</h3>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <span class="stat-label">Ingresos Totales (Histórico)</span>
+                        <span class="stat-label">Ingresos Totales</span>
                         <span class="stat-number" id="stat-total-dinero">$0</span>
                     </div>
                     <div class="stat-card">
@@ -135,7 +179,22 @@
                     </div>
                 </div>
 
-                <h3>Ingresos Mensuales</h3>
+                <h3>Ingresos Centros Externos (Ospia / Ferreyra)</h3>
+                <div class="tabla-container card">
+                    <table id="stats-externos-table">
+                        <thead>
+                            <tr>
+                                <th>Año</th>
+                                <th>Mes</th>
+                                <th>Sede</th>
+                                <th>Total Generado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats-externos-tbody"></tbody>
+                    </table>
+                </div>
+
+                <h3>Desglose Mensual (Consultorio Propio)</h3>
                 <div class="tabla-container card">
                     <table id="stats-table">
                         <thead>
@@ -146,8 +205,7 @@
                                 <th>Total Generado</th>
                             </tr>
                         </thead>
-                        <tbody id="stats-tbody">
-                            </tbody>
+                        <tbody id="stats-tbody"></tbody>
                     </table>
                 </div>
             </div>
