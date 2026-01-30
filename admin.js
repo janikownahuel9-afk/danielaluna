@@ -1,10 +1,6 @@
 // --- 1. Configuración de Supabase ---
-// ¡Reemplaza esto con tus propias claves de Supabase!
 const SUPABASE_URL = 'https://xyckhqxcipgdvkdmjifg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5Y2tocXhjaXBnZHZrZG1qaWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwOTUxNzYsImV4cCI6MjA3NjY3MTE3Nn0.UvFfrKlXaW1bEPuXJfNw6mFU7JyfWDmAPF3GIfgJRtI';
-
-
-
 
 const { createClient } = window.supabase;
 supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -18,13 +14,16 @@ const logoutBtn = document.getElementById('logout-btn');
 
 // Pestañas
 const tabTurnos = document.getElementById('tab-turnos');
+const tabFacturacion = document.getElementById('tab-facturacion'); // NUEVO
 const tabHistorico = document.getElementById('tab-historico');
-const tabEstadisticas = document.getElementById('tab-estadisticas'); // Nuevo
-const panelTurnos = document.getElementById('panel-turnos');
-const panelHistorico = document.getElementById('panel-historico');
-const panelEstadisticas = document.getElementById('panel-estadisticas'); // Nuevo
+const tabEstadisticas = document.getElementById('tab-estadisticas');
 
-// Formulario y Tablas
+const panelTurnos = document.getElementById('panel-turnos');
+const panelFacturacion = document.getElementById('panel-facturacion'); // NUEVO
+const panelHistorico = document.getElementById('panel-historico');
+const panelEstadisticas = document.getElementById('panel-estadisticas');
+
+// Formulario y Tablas (Turnos)
 const turnoForm = document.getElementById('turno-form');
 const successTurno = document.getElementById('success-turno');
 const errorTurno = document.getElementById('error-turno');
@@ -32,11 +31,18 @@ const horaSelect = document.getElementById('hora');
 const turnosTbody = document.getElementById('turnos-tbody');
 const historicoTbody = document.getElementById('historico-tbody');
 
-// Elementos de Estadísticas (Nuevos)
+// Formulario y Tablas (Facturación Externa - NUEVO)
+const facturacionForm = document.getElementById('facturacion-form');
+const successFacturacion = document.getElementById('success-facturacion');
+const errorFacturacion = document.getElementById('error-facturacion');
+const facturacionTbody = document.getElementById('facturacion-tbody');
+
+// Estadísticas
 const statTotalDinero = document.getElementById('stat-total-dinero');
 const statTotalPacientes = document.getElementById('stat-total-pacientes');
 const statTopEstudio = document.getElementById('stat-top-estudio');
 const statsTbody = document.getElementById('stats-tbody');
+const statsExternosTbody = document.getElementById('stats-externos-tbody'); // NUEVO
 
 // --- 3. Funciones de Ayuda ---
 
@@ -63,6 +69,13 @@ function formatearFechaHora(fechaISO) {
     });
 }
 
+function formatearFechaSola(fechaISO) { // NUEVA: Para facturación externa que no tiene hora
+    if (!fechaISO) return '-';
+    // Truco para evitar problemas de zona horaria con fechas solas (YYYY-MM-DD)
+    const [year, month, day] = fechaISO.split('-');
+    return `${day}/${month}/${year}`;
+}
+
 function formatearCosto(costo) {
     if (costo === null || costo === undefined) return '$ 0';
     return Number(costo).toLocaleString('es-AR', {
@@ -87,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function mostrarPanelAdmin() {
     loginSection.style.display = 'none';
     adminDashboard.style.display = 'block';
-    cargarTurnos(); // Carga por defecto la agenda
+    cargarTurnos(); 
 }
 
 loginForm.addEventListener('submit', async (e) => {
@@ -112,9 +125,12 @@ logoutBtn.addEventListener('click', async () => {
 // --- Lógica de Pestañas ---
 function ocultarPaneles() {
     panelTurnos.style.display = 'none';
+    panelFacturacion.style.display = 'none';
     panelHistorico.style.display = 'none';
     panelEstadisticas.style.display = 'none';
+    
     tabTurnos.classList.remove('active');
+    tabFacturacion.classList.remove('active');
     tabHistorico.classList.remove('active');
     tabEstadisticas.classList.remove('active');
 }
@@ -124,6 +140,13 @@ tabTurnos.addEventListener('click', () => {
     panelTurnos.style.display = 'flex';
     tabTurnos.classList.add('active');
     cargarTurnos();
+});
+
+tabFacturacion.addEventListener('click', () => { // NUEVO
+    ocultarPaneles();
+    panelFacturacion.style.display = 'flex';
+    tabFacturacion.classList.add('active');
+    cargarFacturacionExterna();
 });
 
 tabHistorico.addEventListener('click', () => {
@@ -137,16 +160,13 @@ tabEstadisticas.addEventListener('click', () => {
     ocultarPaneles();
     panelEstadisticas.style.display = 'block';
     tabEstadisticas.classList.add('active');
-    cargarEstadisticas(); // Nueva función
+    cargarEstadisticas();
 });
 
-
-// --- 5. Lógica de Datos (CRUD y Stats) ---
+// --- 5. Lógica de Datos (CRUD Turnos) ---
 
 async function cargarTurnos() {
     turnosTbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
-    
-    // Filtro corregido: desde las 00:00 de hoy
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     
@@ -169,7 +189,7 @@ async function cargarTurnos() {
             <td>${turno.tipo_estudio}</td>
             <td>${formatearFechaHora(turno.fecha_hora)}</td>
             <td>${formatearCosto(turno.costo)}</td>
-            <td><button class="btn-eliminar" data-id="${turno.id}">Eliminar</button></td>
+            <td><button class="btn-eliminar" data-id="${turno.id}" data-type="turno">Eliminar</button></td>
         `;
         turnosTbody.appendChild(tr);
     });
@@ -195,110 +215,175 @@ async function cargarHistorico() {
             <td>${turno.tipo_estudio}</td>
             <td>${formatearFechaHora(turno.fecha_hora)}</td>
             <td>${formatearCosto(turno.costo)}</td>
-            <td><button class="btn-eliminar-historico" data-id="${turno.id}">Eliminar</button></td>
+            <td><button class="btn-eliminar" data-id="${turno.id}" data-type="turno">Eliminar</button></td>
         `;
         historicoTbody.appendChild(tr);
     });
 }
 
-// --- NUEVA FUNCIÓN: ESTADÍSTICAS ---
-async function cargarEstadisticas() {
-    // Ponemos cargando...
-    statTotalDinero.textContent = '...';
-    statsTbody.innerHTML = '<tr><td colspan="4">Calculando estadísticas...</td></tr>';
+// --- 6. Lógica de Datos (Facturación Externa - NUEVO) ---
 
-    // 1. Traemos TODOS los turnos (históricos y actuales)
-    const { data: turnos, error } = await supabase
-        .from('turnos')
-        .select('*');
+async function cargarFacturacionExterna() {
+    facturacionTbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
+    
+    const { data: pagos, error } = await supabase
+        .from('facturacion_externa')
+        .select('*')
+        .order('fecha', { ascending: false }); // Más recientes primero
 
     if (error) {
-        console.error(error);
+        facturacionTbody.innerHTML = `<tr><td colspan="5">Error cargando datos.</td></tr>`;
+        return;
+    }
+    if (!pagos.length) {
+        facturacionTbody.innerHTML = `<tr><td colspan="5">No hay registros externos aún.</td></tr>`;
         return;
     }
 
-    // --- VARIABLES PARA CÁLCULOS ---
+    facturacionTbody.innerHTML = '';
+    pagos.forEach(pago => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${pago.sede}</td>
+            <td>${formatearFechaSola(pago.fecha)}</td>
+            <td>${formatearCosto(pago.monto)}</td>
+            <td>${pago.notas || '-'}</td>
+            <td><button class="btn-eliminar" data-id="${pago.id}" data-type="externo">Eliminar</button></td>
+        `;
+        facturacionTbody.appendChild(tr);
+    });
+}
+
+facturacionForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorFacturacion.style.display = 'none';
+    successFacturacion.style.display = 'none';
+
+    const sede = document.getElementById('sede-externa').value;
+    const fecha = document.getElementById('fecha-externa').value;
+    const monto = document.getElementById('monto-externa').value;
+    const notas = document.getElementById('notas-externa').value;
+
+    const { error } = await supabase
+        .from('facturacion_externa')
+        .insert({ sede, fecha, monto, notas });
+
+    if (error) {
+        errorFacturacion.textContent = 'Error al guardar.';
+        errorFacturacion.style.display = 'block';
+    } else {
+        successFacturacion.textContent = '¡Ingreso registrado!';
+        successFacturacion.style.display = 'block';
+        facturacionForm.reset();
+        // Ponemos la fecha de hoy por defecto para agilizar
+        document.getElementById('fecha-externa').valueAsDate = new Date();
+        cargarFacturacionExterna();
+        setTimeout(() => { successFacturacion.style.display = 'none'; }, 3000);
+    }
+});
+
+
+// --- 7. ESTADÍSTICAS (Actualizado para incluir externos) ---
+
+async function cargarEstadisticas() {
+    statTotalDinero.textContent = '...';
+    statsTbody.innerHTML = '<tr><td colspan="4">Calculando...</td></tr>';
+    statsExternosTbody.innerHTML = '<tr><td colspan="4">Calculando...</td></tr>';
+
+    // 1. Traer datos del Consultorio (Turnos)
+    const { data: turnos } = await supabase.from('turnos').select('*');
+    
+    // 2. Traer datos Externos
+    const { data: externos } = await supabase.from('facturacion_externa').select('*');
+
+    // --- A. Procesar Consultorio ---
     let totalGeneral = 0;
     let conteoEstudios = {};
-    let desgloseMensual = {}; // Clave será "2025-10", Valor será el total
+    let desgloseMensual = {}; 
 
-    turnos.forEach(turno => {
-        // A. Sumar al total general
-        const monto = Number(turno.costo) || 0;
-        totalGeneral += monto;
+    if (turnos) {
+        turnos.forEach(turno => {
+            const monto = Number(turno.costo) || 0;
+            totalGeneral += monto;
 
-        // B. Contar estudios para el ranking
-        const estudio = turno.tipo_estudio || 'Desconocido';
-        conteoEstudios[estudio] = (conteoEstudios[estudio] || 0) + 1;
+            const estudio = turno.tipo_estudio || 'Desconocido';
+            conteoEstudios[estudio] = (conteoEstudios[estudio] || 0) + 1;
 
-        // C. Agrupar por Mes y Año
-        const fecha = new Date(turno.fecha_hora);
-        const año = fecha.getFullYear();
-        const mes = fecha.getMonth() + 1; // getMonth es 0-11
-        const claveFecha = `${año}-${mes.toString().padStart(2, '0')}`; // "2025-10"
-
-        if (!desgloseMensual[claveFecha]) {
-            desgloseMensual[claveFecha] = {
-                dinero: 0,
-                pacientes: 0,
-                año: año,
-                mes: mes
-            };
-        }
-        desgloseMensual[claveFecha].dinero += monto;
-        desgloseMensual[claveFecha].pacientes += 1;
-    });
-
-    // --- RENDERIZAR TARJETAS (KPIs) ---
-    
-    // 1. Total Dinero
-    statTotalDinero.textContent = formatearCosto(totalGeneral);
-    
-    // 2. Total Pacientes
-    statTotalPacientes.textContent = turnos.length;
-
-    // 3. Estudio Top
-    let estudioTopNombre = "N/A";
-    let estudioTopCant = 0;
-    for (const [nombre, cantidad] of Object.entries(conteoEstudios)) {
-        if (cantidad > estudioTopCant) {
-            estudioTopCant = cantidad;
-            estudioTopNombre = nombre;
-        }
+            const fecha = new Date(turno.fecha_hora);
+            const key = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`; // "2025-01"
+            
+            if (!desgloseMensual[key]) {
+                desgloseMensual[key] = { dinero: 0, pacientes: 0, year: fecha.getFullYear(), month: fecha.getMonth() };
+            }
+            desgloseMensual[key].dinero += monto;
+            desgloseMensual[key].pacientes += 1;
+        });
     }
-    statTopEstudio.textContent = estudioTopNombre;
 
-    // --- RENDERIZAR TABLA MENSUAL ---
+    // --- B. Procesar Externos ---
+    let desgloseExterno = {}; // Clave: "2025-01-Ospia"
     
-    // Convertimos el objeto desglose a un array y lo ordenamos (más reciente primero)
-    const arrayMensual = Object.values(desgloseMensual).sort((a, b) => {
-        if (a.año !== b.año) return b.año - a.año; // Ordenar por año desc
-        return b.mes - a.mes; // Ordenar por mes desc
-    });
+    if (externos) {
+        externos.forEach(pago => {
+            const monto = Number(pago.monto) || 0;
+            // Fecha viene como "YYYY-MM-DD"
+            const [year, month] = pago.fecha.split('-'); // "2025", "01"
+            const key = `${year}-${month}-${pago.sede}`; // "2025-01-Ospia"
+
+            if (!desgloseExterno[key]) {
+                desgloseExterno[key] = { monto: 0, year: parseInt(year), month: parseInt(month) - 1, sede: pago.sede };
+            }
+            desgloseExterno[key].monto += monto;
+        });
+    }
+
+    // --- C. Renderizar Consultorio ---
+    statTotalDinero.textContent = formatearCosto(totalGeneral);
+    statTotalPacientes.textContent = turnos ? turnos.length : 0;
+    
+    // Estudio Top
+    let topEstudio = "N/A";
+    let max = 0;
+    for (const [est, cant] of Object.entries(conteoEstudios)) {
+        if (cant > max) { max = cant; topEstudio = est; }
+    }
+    statTopEstudio.textContent = topEstudio;
+
+    // Tabla Mensual Consultorio
+    const arrayMensual = Object.values(desgloseMensual).sort((a, b) => (b.year - a.year) || (b.month - a.month));
+    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
     statsTbody.innerHTML = '';
-    
-    // Helper para nombre de mes
-    const nombreMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    arrayMensual.forEach(d => {
+        statsTbody.innerHTML += `
+            <tr>
+                <td>${d.year}</td>
+                <td>${nombresMeses[d.month]}</td>
+                <td>${d.pacientes}</td>
+                <td><strong>${formatearCosto(d.dinero)}</strong></td>
+            </tr>`;
+    });
 
-    if (arrayMensual.length === 0) {
-        statsTbody.innerHTML = '<tr><td colspan="4">No hay datos suficientes.</td></tr>';
+    // --- D. Renderizar Tabla Externos ---
+    const arrayExterno = Object.values(desgloseExterno).sort((a, b) => (b.year - a.year) || (b.month - a.month));
+    
+    statsExternosTbody.innerHTML = '';
+    if (arrayExterno.length === 0) {
+        statsExternosTbody.innerHTML = '<tr><td colspan="4">Sin datos externos.</td></tr>';
     } else {
-        arrayMensual.forEach(dato => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${dato.año}</td>
-                <td>${nombreMeses[dato.mes - 1]}</td>
-                <td>${dato.pacientes}</td>
-                <td><strong>${formatearCosto(dato.dinero)}</strong></td>
-            `;
-            statsTbody.appendChild(tr);
+        arrayExterno.forEach(d => {
+            statsExternosTbody.innerHTML += `
+                <tr>
+                    <td>${d.year}</td>
+                    <td>${nombresMeses[d.month]}</td>
+                    <td>${d.sede}</td>
+                    <td><strong>${formatearCosto(d.monto)}</strong></td>
+                </tr>`;
         });
     }
 }
 
-// --- Manejo de Formularios y Botones (Turnos) ---
-
+// --- 8. Manejo de Turnos (Agregar) ---
 turnoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorTurno.style.display = 'none';
@@ -324,7 +409,6 @@ turnoForm.addEventListener('submit', async (e) => {
         return;
     }
 
-    // Insertar
     const { error } = await supabase
         .from('turnos')
         .insert({ nombre_paciente: paciente, tipo_estudio: estudio, fecha_hora: fecha_hora, costo: costo });
@@ -341,17 +425,26 @@ turnoForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Delegación de eventos para botones eliminar (Agenda y Histórico)
-const manejarEliminacion = async (e, callbackRecarga) => {
-    if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Eliminar') {
+// --- 9. Eliminación Unificada (Delegación) ---
+document.body.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('btn-eliminar')) {
         const id = e.target.dataset.id;
-        if (confirm('¿Eliminar este turno permanentemente?')) {
-            const { error } = await supabase.from('turnos').delete().match({ id: id });
-            if (!error) callbackRecarga();
+        const type = e.target.dataset.type; // 'turno' o 'externo'
+        const tabla = type === 'externo' ? 'facturacion_externa' : 'turnos';
+
+        if (confirm('¿Eliminar este registro permanentemente?')) {
+            const { error } = await supabase.from(tabla).delete().eq('id', id);
+            
+            if (!error) {
+                if (type === 'externo') cargarFacturacionExterna();
+                else {
+                    // Si estamos en la pestaña Agenda, recargar Agenda, si no Historico
+                    if (tabTurnos.classList.contains('active')) cargarTurnos();
+                    else cargarHistorico();
+                }
+            } else {
+                alert("Error al eliminar");
+            }
         }
     }
-};
-
-turnosTbody.addEventListener('click', (e) => manejarEliminacion(e, cargarTurnos));
-historicoTbody.addEventListener('click', (e) => manejarEliminacion(e, cargarHistorico));
-
+});
