@@ -1,450 +1,285 @@
-// --- 1. Configuración de Supabase ---
-const SUPABASE_URL = 'https://xyckhqxcipgdvkdmjifg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5Y2tocXhjaXBnZHZrZG1qaWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwOTUxNzYsImV4cCI6MjA3NjY3MTE3Nn0.UvFfrKlXaW1bEPuXJfNw6mFU7JyfWDmAPF3GIfgJRtI';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Dra. Luna - Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="admin-body">
 
-const { createClient } = window.supabase;
-supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <section id="login-section" class="login-overlay">
+        <div class="login-card">
+            <h2>Consultorio Luna</h2>
+            <p>Acceso Administrativo</p>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="Usuario" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit" class="btn-login">Ingresar</button>
+            </form>
+            <p id="error-login" class="error-msg"></p>
+            <a href="index.html" class="back-link">Volver al sitio web</a>
+        </div>
+    </section>
 
-// --- 2. Referencias a elementos del DOM ---
-const loginSection = document.getElementById('login-section');
-const adminDashboard = document.getElementById('admin-dashboard');
-const loginForm = document.getElementById('login-form');
-const errorLogin = document.getElementById('error-login');
-const logoutBtn = document.getElementById('logout-btn');
-
-// Pestañas
-const tabTurnos = document.getElementById('tab-turnos');
-const tabFacturacion = document.getElementById('tab-facturacion'); // NUEVO
-const tabHistorico = document.getElementById('tab-historico');
-const tabEstadisticas = document.getElementById('tab-estadisticas');
-
-const panelTurnos = document.getElementById('panel-turnos');
-const panelFacturacion = document.getElementById('panel-facturacion'); // NUEVO
-const panelHistorico = document.getElementById('panel-historico');
-const panelEstadisticas = document.getElementById('panel-estadisticas');
-
-// Formulario y Tablas (Turnos)
-const turnoForm = document.getElementById('turno-form');
-const successTurno = document.getElementById('success-turno');
-const errorTurno = document.getElementById('error-turno');
-const horaSelect = document.getElementById('hora');
-const turnosTbody = document.getElementById('turnos-tbody');
-const historicoTbody = document.getElementById('historico-tbody');
-
-// Formulario y Tablas (Facturación Externa - NUEVO)
-const facturacionForm = document.getElementById('facturacion-form');
-const successFacturacion = document.getElementById('success-facturacion');
-const errorFacturacion = document.getElementById('error-facturacion');
-const facturacionTbody = document.getElementById('facturacion-tbody');
-
-// Estadísticas
-const statTotalDinero = document.getElementById('stat-total-dinero');
-const statTotalPacientes = document.getElementById('stat-total-pacientes');
-const statTopEstudio = document.getElementById('stat-top-estudio');
-const statsTbody = document.getElementById('stats-tbody');
-const statsExternosTbody = document.getElementById('stats-externos-tbody'); // NUEVO
-
-// --- 3. Funciones de Ayuda ---
-
-function popularHorarios() {
-    for (let h = 0; h < 24; h++) {
-        for (let m = 0; m < 60; m += 15) {
-            const horaStr = h.toString().padStart(2, '0');
-            const minStr = m.toString().padStart(2, '0');
-            const time = `${horaStr}:${minStr}`;
-            const option = document.createElement('option');
-            option.value = time;
-            option.textContent = time;
-            horaSelect.appendChild(option);
-        }
-    }
-}
-
-function formatearFechaHora(fechaISO) {
-    const fecha = new Date(fechaISO);
-    return fecha.toLocaleString('es-AR', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone: 'America/Argentina/Buenos_Aires'
-    });
-}
-
-function formatearFechaSola(fechaISO) { // NUEVA: Para facturación externa que no tiene hora
-    if (!fechaISO) return '-';
-    // Truco para evitar problemas de zona horaria con fechas solas (YYYY-MM-DD)
-    const [year, month, day] = fechaISO.split('-');
-    return `${day}/${month}/${year}`;
-}
-
-function formatearCosto(costo) {
-    if (costo === null || costo === undefined) return '$ 0';
-    return Number(costo).toLocaleString('es-AR', {
-        style: 'currency',
-        currency: 'ARS',
-        minimumFractionDigits: 0
-    });
-}
-
-// --- 4. Lógica de Autenticación y Navegación ---
-
-document.addEventListener('DOMContentLoaded', async () => {
-    popularHorarios();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        mostrarPanelAdmin();
-    } else {
-        loginSection.style.display = 'block';
-    }
-});
-
-function mostrarPanelAdmin() {
-    loginSection.style.display = 'none';
-    adminDashboard.style.display = 'block';
-    cargarTurnos(); 
-}
-
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-        errorLogin.textContent = 'Error: Email o contraseña incorrectos.';
-        errorLogin.style.display = 'block';
-    } else {
-        errorLogin.style.display = 'none';
-        mostrarPanelAdmin();
-    }
-});
-
-logoutBtn.addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    location.reload();
-});
-
-// --- Lógica de Pestañas ---
-function ocultarPaneles() {
-    panelTurnos.style.display = 'none';
-    panelFacturacion.style.display = 'none';
-    panelHistorico.style.display = 'none';
-    panelEstadisticas.style.display = 'none';
-    
-    tabTurnos.classList.remove('active');
-    tabFacturacion.classList.remove('active');
-    tabHistorico.classList.remove('active');
-    tabEstadisticas.classList.remove('active');
-}
-
-tabTurnos.addEventListener('click', () => {
-    ocultarPaneles();
-    panelTurnos.style.display = 'flex';
-    tabTurnos.classList.add('active');
-    cargarTurnos();
-});
-
-tabFacturacion.addEventListener('click', () => { // NUEVO
-    ocultarPaneles();
-    panelFacturacion.style.display = 'flex';
-    tabFacturacion.classList.add('active');
-    cargarFacturacionExterna();
-});
-
-tabHistorico.addEventListener('click', () => {
-    ocultarPaneles();
-    panelHistorico.style.display = 'block';
-    tabHistorico.classList.add('active');
-    cargarHistorico();
-});
-
-tabEstadisticas.addEventListener('click', () => {
-    ocultarPaneles();
-    panelEstadisticas.style.display = 'block';
-    tabEstadisticas.classList.add('active');
-    cargarEstadisticas();
-});
-
-// --- 5. Lógica de Datos (CRUD Turnos) ---
-
-async function cargarTurnos() {
-    turnosTbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    
-    const { data: turnos, error } = await supabase
-        .from('turnos')
-        .select('*')
-        .gte('fecha_hora', hoy.toISOString())
-        .order('fecha_hora', { ascending: true }); 
-
-    if (error || !turnos.length) {
-        turnosTbody.innerHTML = `<tr><td colspan="5">${error ? 'Error' : 'No hay próximos turnos.'}</td></tr>`;
-        return;
-    }
-
-    turnosTbody.innerHTML = '';
-    turnos.forEach(turno => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${turno.nombre_paciente}</td>
-            <td>${turno.tipo_estudio}</td>
-            <td>${formatearFechaHora(turno.fecha_hora)}</td>
-            <td>${formatearCosto(turno.costo)}</td>
-            <td><button class="btn-eliminar" data-id="${turno.id}" data-type="turno">Eliminar</button></td>
-        `;
-        turnosTbody.appendChild(tr);
-    });
-}
-
-async function cargarHistorico() {
-    historicoTbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
-    const { data: turnos, error } = await supabase
-        .from('turnos')
-        .select('*')
-        .order('fecha_hora', { ascending: false });
-
-    if (error || !turnos.length) {
-        historicoTbody.innerHTML = `<tr><td colspan="5">${error ? 'Error' : 'Histórico vacío.'}</td></tr>`;
-        return;
-    }
-
-    historicoTbody.innerHTML = '';
-    turnos.forEach(turno => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${turno.nombre_paciente}</td>
-            <td>${turno.tipo_estudio}</td>
-            <td>${formatearFechaHora(turno.fecha_hora)}</td>
-            <td>${formatearCosto(turno.costo)}</td>
-            <td><button class="btn-eliminar" data-id="${turno.id}" data-type="turno">Eliminar</button></td>
-        `;
-        historicoTbody.appendChild(tr);
-    });
-}
-
-// --- 6. Lógica de Datos (Facturación Externa - NUEVO) ---
-
-async function cargarFacturacionExterna() {
-    facturacionTbody.innerHTML = `<tr><td colspan="5">Cargando...</td></tr>`;
-    
-    const { data: pagos, error } = await supabase
-        .from('facturacion_externa')
-        .select('*')
-        .order('fecha', { ascending: false }); // Más recientes primero
-
-    if (error) {
-        facturacionTbody.innerHTML = `<tr><td colspan="5">Error cargando datos.</td></tr>`;
-        return;
-    }
-    if (!pagos.length) {
-        facturacionTbody.innerHTML = `<tr><td colspan="5">No hay registros externos aún.</td></tr>`;
-        return;
-    }
-
-    facturacionTbody.innerHTML = '';
-    pagos.forEach(pago => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${pago.sede}</td>
-            <td>${formatearFechaSola(pago.fecha)}</td>
-            <td>${formatearCosto(pago.monto)}</td>
-            <td>${pago.notas || '-'}</td>
-            <td><button class="btn-eliminar" data-id="${pago.id}" data-type="externo">Eliminar</button></td>
-        `;
-        facturacionTbody.appendChild(tr);
-    });
-}
-
-facturacionForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorFacturacion.style.display = 'none';
-    successFacturacion.style.display = 'none';
-
-    const sede = document.getElementById('sede-externa').value;
-    const fecha = document.getElementById('fecha-externa').value;
-    const monto = document.getElementById('monto-externa').value;
-    const notas = document.getElementById('notas-externa').value;
-
-    const { error } = await supabase
-        .from('facturacion_externa')
-        .insert({ sede, fecha, monto, notas });
-
-    if (error) {
-        errorFacturacion.textContent = 'Error al guardar.';
-        errorFacturacion.style.display = 'block';
-    } else {
-        successFacturacion.textContent = '¡Ingreso registrado!';
-        successFacturacion.style.display = 'block';
-        facturacionForm.reset();
-        // Ponemos la fecha de hoy por defecto para agilizar
-        document.getElementById('fecha-externa').valueAsDate = new Date();
-        cargarFacturacionExterna();
-        setTimeout(() => { successFacturacion.style.display = 'none'; }, 3000);
-    }
-});
-
-
-// --- 7. ESTADÍSTICAS (Actualizado para incluir externos) ---
-
-async function cargarEstadisticas() {
-    statTotalDinero.textContent = '...';
-    statsTbody.innerHTML = '<tr><td colspan="4">Calculando...</td></tr>';
-    statsExternosTbody.innerHTML = '<tr><td colspan="4">Calculando...</td></tr>';
-
-    // 1. Traer datos del Consultorio (Turnos)
-    const { data: turnos } = await supabase.from('turnos').select('*');
-    
-    // 2. Traer datos Externos
-    const { data: externos } = await supabase.from('facturacion_externa').select('*');
-
-    // --- A. Procesar Consultorio ---
-    let totalGeneral = 0;
-    let conteoEstudios = {};
-    let desgloseMensual = {}; 
-
-    if (turnos) {
-        turnos.forEach(turno => {
-            const monto = Number(turno.costo) || 0;
-            totalGeneral += monto;
-
-            const estudio = turno.tipo_estudio || 'Desconocido';
-            conteoEstudios[estudio] = (conteoEstudios[estudio] || 0) + 1;
-
-            const fecha = new Date(turno.fecha_hora);
-            const key = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`; // "2025-01"
+    <div id="admin-dashboard" class="dashboard-container" style="display: none;">
+        
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h3>Dra. Luna</h3>
+                <span>Admin Panel</span>
+            </div>
             
-            if (!desgloseMensual[key]) {
-                desgloseMensual[key] = { dinero: 0, pacientes: 0, year: fecha.getFullYear(), month: fecha.getMonth() };
-            }
-            desgloseMensual[key].dinero += monto;
-            desgloseMensual[key].pacientes += 1;
-        });
-    }
+            <nav class="sidebar-menu">
+                <button class="menu-item active" data-target="view-resumen">
+                    <i class="fas fa-chart-pie"></i> Resumen
+                </button>
+                <button class="menu-item" data-target="view-agenda">
+                    <i class="fas fa-calendar-check"></i> Agenda de Turnos
+                </button>
+                <button class="menu-item" data-target="view-finanzas">
+                    <i class="fas fa-wallet"></i> Finanzas & Pagos
+                </button>
+                <button class="menu-item" data-target="view-pacientes">
+                    <i class="fas fa-users"></i> Histórico Pacientes
+                </button>
+            </nav>
 
-    // --- B. Procesar Externos ---
-    let desgloseExterno = {}; // Clave: "2025-01-Ospia"
-    
-    if (externos) {
-        externos.forEach(pago => {
-            const monto = Number(pago.monto) || 0;
-            // Fecha viene como "YYYY-MM-DD"
-            const [year, month] = pago.fecha.split('-'); // "2025", "01"
-            const key = `${year}-${month}-${pago.sede}`; // "2025-01-Ospia"
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+            </div>
+        </aside>
 
-            if (!desgloseExterno[key]) {
-                desgloseExterno[key] = { monto: 0, year: parseInt(year), month: parseInt(month) - 1, sede: pago.sede };
-            }
-            desgloseExterno[key].monto += monto;
-        });
-    }
-
-    // --- C. Renderizar Consultorio ---
-    statTotalDinero.textContent = formatearCosto(totalGeneral);
-    statTotalPacientes.textContent = turnos ? turnos.length : 0;
-    
-    // Estudio Top
-    let topEstudio = "N/A";
-    let max = 0;
-    for (const [est, cant] of Object.entries(conteoEstudios)) {
-        if (cant > max) { max = cant; topEstudio = est; }
-    }
-    statTopEstudio.textContent = topEstudio;
-
-    // Tabla Mensual Consultorio
-    const arrayMensual = Object.values(desgloseMensual).sort((a, b) => (b.year - a.year) || (b.month - a.month));
-    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-
-    statsTbody.innerHTML = '';
-    arrayMensual.forEach(d => {
-        statsTbody.innerHTML += `
-            <tr>
-                <td>${d.year}</td>
-                <td>${nombresMeses[d.month]}</td>
-                <td>${d.pacientes}</td>
-                <td><strong>${formatearCosto(d.dinero)}</strong></td>
-            </tr>`;
-    });
-
-    // --- D. Renderizar Tabla Externos ---
-    const arrayExterno = Object.values(desgloseExterno).sort((a, b) => (b.year - a.year) || (b.month - a.month));
-    
-    statsExternosTbody.innerHTML = '';
-    if (arrayExterno.length === 0) {
-        statsExternosTbody.innerHTML = '<tr><td colspan="4">Sin datos externos.</td></tr>';
-    } else {
-        arrayExterno.forEach(d => {
-            statsExternosTbody.innerHTML += `
-                <tr>
-                    <td>${d.year}</td>
-                    <td>${nombresMeses[d.month]}</td>
-                    <td>${d.sede}</td>
-                    <td><strong>${formatearCosto(d.monto)}</strong></td>
-                </tr>`;
-        });
-    }
-}
-
-// --- 8. Manejo de Turnos (Agregar) ---
-turnoForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorTurno.style.display = 'none';
-    successTurno.style.display = 'none';
-    
-    const paciente = document.getElementById('paciente').value;
-    const estudio = document.getElementById('estudio').value;
-    const costo = document.getElementById('costo').value;
-    const fecha = document.getElementById('fecha').value;
-    const hora = document.getElementById('hora').value;
-    const fecha_hora = `${fecha}T${hora}:00`;
-
-    // Validar colisión
-    const { data: existente } = await supabase
-        .from('turnos')
-        .select('id')
-        .eq('fecha_hora', fecha_hora)
-        .limit(1);
-
-    if (existente && existente.length > 0) {
-        errorTurno.textContent = '¡Ya existe un turno en esa fecha y hora!';
-        errorTurno.style.display = 'block';
-        return;
-    }
-
-    const { error } = await supabase
-        .from('turnos')
-        .insert({ nombre_paciente: paciente, tipo_estudio: estudio, fecha_hora: fecha_hora, costo: costo });
-
-    if (error) {
-        errorTurno.textContent = 'Error al guardar.';
-        errorTurno.style.display = 'block';
-    } else {
-        successTurno.textContent = 'Turno agendado!';
-        successTurno.style.display = 'block';
-        turnoForm.reset();
-        cargarTurnos();
-        setTimeout(() => { successTurno.style.display = 'none'; }, 3000);
-    }
-});
-
-// --- 9. Eliminación Unificada (Delegación) ---
-document.body.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('btn-eliminar')) {
-        const id = e.target.dataset.id;
-        const type = e.target.dataset.type; // 'turno' o 'externo'
-        const tabla = type === 'externo' ? 'facturacion_externa' : 'turnos';
-
-        if (confirm('¿Eliminar este registro permanentemente?')) {
-            const { error } = await supabase.from(tabla).delete().eq('id', id);
+        <main class="main-content">
             
-            if (!error) {
-                if (type === 'externo') cargarFacturacionExterna();
-                else {
-                    // Si estamos en la pestaña Agenda, recargar Agenda, si no Historico
-                    if (tabTurnos.classList.contains('active')) cargarTurnos();
-                    else cargarHistorico();
-                }
-            } else {
-                alert("Error al eliminar");
-            }
-        }
-    }
-});
+            <section id="view-resumen" class="view-panel active">
+                <header class="panel-header">
+                    <h1>Hola, Daniela 👋</h1>
+                    <p>Resumen de actividad del consultorio.</p>
+                </header>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon"><i class="fas fa-calendar-day"></i></div>
+                        <div class="kpi-info">
+                            <h3>Turnos Hoy</h3>
+                            <p class="kpi-number" id="kpi-turnos-hoy">0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card green">
+                        <div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="kpi-info">
+                            <h3>Ingresos Este Mes</h3>
+                            <small>(Consultorios + Externos)</small>
+                            <p class="kpi-number" id="kpi-ingresos-mes">$0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-icon"><i class="fas fa-user-injured"></i></div>
+                        <div class="kpi-info">
+                            <h3>Próximo Paciente</h3>
+                            <p class="kpi-text" id="kpi-prox-paciente">-</p>
+                            <small id="kpi-prox-hora">-</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-agenda" class="view-panel" style="display: none;">
+                <header class="panel-header">
+                    <h1>Agenda de Turnos</h1>
+                </header>
+                
+                <div class="split-layout">
+                    <div class="card-form">
+                        <h3 id="form-title"><i class="fas fa-plus-circle"></i> Nuevo Turno</h3>
+                        <form id="turno-form">
+                            <input type="hidden" id="edit-id">
+
+                            <label>Sede (Consultorio)</label>
+                            <select id="sede" required>
+                                <option value="" disabled selected>Seleccionar Sede...</option>
+                                <option value="Consultorio Vélez Sarsfield">Consultorio Vélez Sarsfield</option>
+                                <option value="Consultorio Julio Arboleda">Consultorio Julio Arboleda</option>
+                            </select>
+
+                            <label>Paciente</label>
+                            <input type="text" id="paciente" placeholder="Nombre completo" required>
+                            
+                            <label>Estudio</label>
+                            <select id="estudio" required>
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option value="Ecografía Abdominal">Ecografía Abdominal</option>
+                                <option value="Ecografía Ginecológica">Ecografía Ginecológica</option>
+                                <option value="Ecografía Obstétrica">Ecografía Obstétrica</option>
+                                <option value="Ecografía 4D/5D">Ecografía 4D/5D</option>
+                                <option value="Ecografía Mamaria">Ecografía Mamaria</option>
+                                <option value="Ecografía Musculoesquelética">Ecografía Musculoesquelética</option>
+                                <option value="Doppler Vascular">Doppler Vascular</option>
+                                <option value="Ecografía Pediátrica">Ecografía Pediátrica</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            
+                            <div class="row-2">
+                                <div>
+                                    <label>Fecha</label>
+                                    <input type="date" id="fecha" required>
+                                </div>
+                                <div>
+                                    <label>Hora</label>
+                                    <select id="hora" required></select>
+                                </div>
+                            </div>
+
+                            <label>Costo ($)</label>
+                            <input type="number" id="costo" placeholder="0" required>
+
+                            <button type="submit" id="btn-save-turno" class="btn-action">Agendar Turno</button>
+                            <button type="button" id="btn-cancel-edit" class="btn-action secondary" style="display: none; margin-top: 10px;">Cancelar Edición</button>
+                            
+                            <p id="success-turno" class="success-msg"></p>
+                            <p id="error-turno" class="error-msg"></p>
+                        </form>
+                    </div>
+
+                    <div class="agenda-tables-container">
+                        
+                        <div class="card-table-container mb-20">
+                            <h3 class="sede-title velez">📍 Vélez Sarsfield</h3>
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Paciente</th>
+                                            <th>Estudio</th>
+                                            <th>Costo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="turnos-velez-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-table-container">
+                            <h3 class="sede-title arboleda">📍 Julio Arboleda</h3>
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Paciente</th>
+                                            <th>Estudio</th>
+                                            <th>Costo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="turnos-arboleda-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-finanzas" class="view-panel" style="display: none;">
+                <header class="panel-header">
+                    <h1>Finanzas y Pagos Externos</h1>
+                </header>
+
+                <div class="split-layout">
+                    <div class="card-form">
+                        <h3><i class="fas fa-hand-holding-usd"></i> Registrar Ingreso Externo</h3>
+                        <p class="text-muted">Pagos de Ospia, Ferreyra, etc.</p>
+                        
+                        <form id="facturacion-form">
+                            <label>Sede / Origen</label>
+                            <select id="sede-externa" required>
+                                <option value="" disabled selected>Seleccionar sede...</option>
+                                <option value="Ospia">Ospia</option>
+                                <option value="Ferreyra">Ferreyra</option>
+                            </select>
+
+                            <label>Fecha de Cobro</label>
+                            <input type="date" id="fecha-externa" required>
+
+                            <label>Monto Cobrado ($)</label>
+                            <input type="number" id="monto-externa" placeholder="0" required>
+
+                            <label>Notas (Opcional)</label>
+                            <input type="text" id="notas-externa" placeholder="Detalles extra...">
+
+                            <button type="submit" class="btn-action secondary">Registrar Ingreso</button>
+                            <p id="success-facturacion" class="success-msg"></p>
+                        </form>
+
+                        <div class="mini-list-container">
+                            <h4>Últimos Cargados</h4>
+                            <ul id="lista-ultimos-externos" class="mini-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="stats-overview">
+                        <div class="card-table-container">
+                            <h3><i class="fas fa-building"></i> Total por Sede (Externos)</h3>
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Sede</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-externos-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="card-table-container" style="margin-top: 20px;">
+                            <h3><i class="fas fa-home"></i> Ingresos Consultorios Propios</h3>
+                            <p class="text-muted small">(Vélez Sarsfield + Julio Arboleda)</p>
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Pacientes</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-pacientes" class="view-panel" style="display: none;">
+                <header class="panel-header">
+                    <h1>Historial de Pacientes</h1>
+                </header>
+                <div class="card-table-container full-width">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Sede</th>
+                                <th>Paciente</th>
+                                <th>Estudio</th>
+                                <th>Costo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historico-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
