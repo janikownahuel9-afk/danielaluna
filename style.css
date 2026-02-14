@@ -1,4 +1,4 @@
-/* --- Variables de Color (Paleta) --- */
+/* --- 1. VARIABLES GLOBALES (COLORES) --- */
 :root {
     --turquesa: #40E0D0;
     --gris-claro: #f4f4f4;
@@ -7,31 +7,24 @@
     --sombra: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* --- Estilos Globales --- */
+/* --- 2. ESTILOS DE LA WEB PÚBLICA (LANDING) --- */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
-    background-color: var(--gris-claro); /* Fondo base para las secciones "tarjeta" */
+    background-color: var(--gris-claro);
     color: var(--gris-oscuro);
     line-height: 1.6;
 }
 
-h1, h2, h3 {
-    color: var(--turquesa);
-}
+h1, h2, h3 { color: var(--turquesa); }
 
-/* --- HEADER FLOTANTE (index.html) --- */
+/* Header Flotante */
 .main-header {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    top: 0; left: 0; width: 100%;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 20px 40px; 
-    z-index: 1000;
-    box-sizing: border-box; 
+    z-index: 1000; box-sizing: border-box; 
     background: transparent; 
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -41,469 +34,264 @@ h1, h2, h3 {
     box-shadow: var(--sombra);
 }
 .logo {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: var(--blanco); 
+    font-size: 1.5em; font-weight: bold; color: var(--blanco); 
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); 
 }
-.main-header.scrolled .logo {
-    color: var(--gris-oscuro); 
-    text-shadow: none;
-}
+.main-header.scrolled .logo { color: var(--gris-oscuro); text-shadow: none; }
 .main-header nav a {
-    color: var(--blanco);
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-    text-decoration: none;
-    padding: 10px 15px;
-    font-weight: 500;
+    color: var(--blanco); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    text-decoration: none; padding: 10px 15px; font-weight: 500;
     transition: color 0.3s ease;
 }
-.main-header nav a:hover {
-    color: var(--turquesa);
-}
-.main-header.scrolled nav a {
-    color: var(--gris-oscuro); 
-    text-shadow: none;
-}
+.main-header nav a:hover { color: var(--turquesa); }
+.main-header.scrolled nav a { color: var(--gris-oscuro); text-shadow: none; }
 
-/* --- HERO SECTION (index.html) --- */
+/* Hero Section */
 .hero-section {
     background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('http://imgfz.com/i/9cV2qER.jpeg') center center/cover no-repeat;
-    height: 100vh; 
-    min-height: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--blanco);
-    padding: 0 20px;
-    box-sizing: border-box;
+    height: 100vh; min-height: 600px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; color: var(--blanco);
+    padding: 0 20px; box-sizing: border-box;
 }
 .hero-content h1 {
-    font-size: 3.5em;
-    font-weight: 700;
-    color: var(--blanco);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    margin-bottom: 15px;
+    font-size: 3.5em; font-weight: 700; color: var(--blanco);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 15px;
 }
 .hero-content p {
-    font-size: 1.4em;
-    margin-bottom: 30px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    font-size: 1.4em; margin-bottom: 30px; max-width: 600px;
+    margin-left: auto; margin-right: auto;
 }
 
-/* --- ESTRUCTURA DE CONTENIDO 'main' (index.html) --- */
-main {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
-.content-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
-}
-main section {
-    padding: 40px 0; 
-    scroll-margin-top: 80px; 
-}
-#servicios h2 {
-    text-align: center;
-    padding-top: 40px; 
-}
-
-/* --- ESTILO DE TARJETAS (index.html) --- */
-.card {
-    background: var(--blanco);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: var(--sombra);
-}
-#sobre-mi .content-wrapper,
-#servicios .content-wrapper,
-#contacto .content-wrapper {
-    background: var(--blanco);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: var(--sombra);
-    margin-top: 40px; 
-    margin-bottom: 40px;
-}
-.image-card {
-    display: flex;
-    flex-direction: column; 
-    gap: 25px;
-    align-items: center;
-}
-.image-card .image-wrapper {
-    flex: 1;
-    max-width: 100%;
-    text-align: center;
-}
-.image-card .image-wrapper img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.image-card .card-content {
-    flex: 2;
-    text-align: left;
-}
-.image-card .card-content ul {
-    list-style-type: '✓'; 
-    padding-left: 25px;
-}
-.image-card .card-content li {
-    padding-left: 10px;
-    margin-bottom: 5px;
-}
-
-/* --- DOS COLUMNAS (index.html) --- */
-.two-column-layout {
-    display: flex;
-    flex-direction: column; 
-    gap: 30px; 
-    max-width: 1600px; 
-    margin: 40px auto; 
-    padding: 0 40px; 
-    box-sizing: border-box;
-}
-.column-card {
-    background: var(--blanco);
-    border-radius: 12px;
-    box-shadow: var(--sombra);
-    padding: 25px; 
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
-}
-.column-card:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); 
-}
-.column-card h2 {
-    padding-top: 0;
-}
-
-/* --- COMPONENTES (BOTONES, CONTACTO, FOOTER) --- */
-.btn,
-button {
+/* Botones Generales */
+.btn, button {
     display: inline-block;
     background-color: var(--turquesa);
     color: var(--blanco);
-    border: none;
-    padding: 12px 20px;
-    font-size: 1em;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none; padding: 12px 20px;
+    font-size: 1em; font-weight: bold; border-radius: 8px;
+    cursor: pointer; text-decoration: none; text-align: center;
+    transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-.btn:hover,
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.btn:hover, button:hover {
+    transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     filter: brightness(1.1);
 }
 .btn-secondary { background-color: var(--gris-oscuro); }
-.botones-contacto { 
-    display: flex; 
-    gap: 15px; 
-    flex-wrap: wrap; 
+
+/* Layout y Secciones */
+main { width: 100%; margin: 0; padding: 0; }
+.content-wrapper { max-width: 900px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+main section { padding: 40px 0; scroll-margin-top: 80px; }
+
+.two-column-layout {
+    display: flex; flex-direction: column; gap: 30px; 
+    max-width: 1600px; margin: 40px auto; padding: 0 40px; box-sizing: border-box;
 }
-.botones-contacto .btn { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
+.column-card {
+    background: var(--blanco); border-radius: 12px;
+    box-shadow: var(--sombra); padding: 25px; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
+.column-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); }
+
+.image-card { display: flex; flex-direction: column; gap: 25px; align-items: center; }
+.image-card .image-wrapper img {
+    max-width: 100%; height: auto; border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.image-card .card-content ul { list-style-type: '✓'; padding-left: 25px; }
+.image-card .card-content li { padding-left: 10px; margin-bottom: 5px; }
+
+/* Contacto y Footer */
+.botones-contacto { display: flex; gap: 15px; flex-wrap: wrap; }
+.botones-contacto .btn { display: flex; align-items: center; gap: 10px; }
 footer {
-    text-align: center;
-    padding: 30px 20px;
-    margin-top: 0;
-    font-size: 0.9em;
-    color: #777;
-    background: var(--gris-claro);
+    text-align: center; padding: 30px 20px; margin-top: 0;
+    font-size: 0.9em; color: #777; background: var(--gris-claro);
 }
-footer a { 
-    color: var(--turquesa); 
-    text-decoration: none; 
-}
+footer a { color: var(--turquesa); text-decoration: none; }
 
-/* --- ESTILOS PARA ADMIN.HTML (FORMULARIOS Y TABLAS) --- */
-/* (Reutiliza .card, .btn, .btn-secondary) */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-label {
-    font-weight: bold;
-    margin-bottom: -5px;
-}
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"],
-input[type="time"],
-input[type="number"],
-select { /* Añadido select */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1em;
-    font-family: inherit; /* Hereda la fuente */
-    background: var(--blanco);
-}
-.error-msg {
-    color: #D8000C;
-    display: none; 
-}
-.success-msg {
-    color: #4F8A10;
-    display: none; 
-}
-.tabla-container {
-    width: 100%;
-    overflow-x: auto; 
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-th, td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-
-}
-th {
-    background-color: var(--gris-claro);
-    color: var(--gris-oscuro);
-}
-tbody tr:nth-child(even) {
-    background-color: var(--gris-claro);
-}
-
-
-
-/* 1. Título principal "Panel de Administración" */
-/* Lo alineamos con Flexbox */
-.admin-header {
-    background: var(--blanco);
-    padding: 20px 40px;
-    box-shadow: var(--sombra);
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.admin-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ddd;
-}
-.tab-btn {
-    padding: 10px 15px;
-    font-size: 1em;
-    font-weight: bold;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #777;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
-}
-.tab-btn:hover {
-    color: var(--gris-oscuro);
-}
-.tab-btn.active {
-    color: var(--turquesa);
-    border-bottom-color: var(--turquesa);
-}
-#panel-turnos {
-    display: flex;
-    flex-wrap: wrap; /* En pantallas chicas se apila */
-    gap: 30px;
-}
-.admin-columna {
-    flex: 1;
-    min-width: 300px; /* Ancho mínimo de cada columna */
-}
-#panel-historico .tabla-container {
-    max-height: 600px; /* Limita la altura del histórico */
-    overflow-y: auto;
-}
-
-
-/* --- RESPONSIVE DESIGN --- */
+/* Responsive */
 @media (min-width: 768px) {
-    .image-card {
-        flex-direction: row; 
-    }
-    .image-card.reverse {
-        flex-direction: row-reverse; 
-    }
-    .hero-content {
-        text-align: left; 
-        padding: 0 8%;
-        max-width: 1200px;
-        margin: 0;
-    }
-    .hero-content p {
-        margin-left: 0;
-    }
-    .two-column-layout {
-        flex-direction: row; 
-    }
+    .image-card { flex-direction: row; }
+    .image-card.reverse { flex-direction: row-reverse; }
+    .hero-content { text-align: left; padding: 0 8%; max-width: 1200px; margin: 0; }
+    .two-column-layout { flex-direction: row; }
 }
 @media (max-width: 768px) {
-    .main-header {
-        flex-direction: column; 
-        padding: 15px;
-        background: rgba(0,0,0,0.5); 
-    }
-    .main-header.scrolled {
-        background: rgba(255, 255, 255, 0.9);
-    }
-    .hero-content h1 {
-        font-size: 2.5em;
-    }
-    .hero-content p {
-        font-size: 1.1em;
-    }
-    .botones-contacto {
-        flex-direction: column;
-    }
+    .main-header { flex-direction: column; padding: 15px; background: rgba(0,0,0,0.5); }
+    .hero-content h1 { font-size: 2.5em; }
 }
 
-/* --- ESTILOS PROFESIONALES PARA TÍTULOS (admin.html) --- */
 
-/* 1. Título principal "Panel de Administración" */
-/* Lo centramos y le damos un fondo limpio */
-header {
-    background: var(--blanco);
-    padding: 20px 40px;
-    text-align: center;
-    box-shadow: var(--sombra);
-    border-bottom: 1px solid #eee;
+/* --- 3. ESTILOS DEL NUEVO PANEL ADMIN (DASHBOARD) --- */
+
+/* Reset básico para el admin */
+.admin-body {
+    background-color: #f4f6f8;
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #333;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 1.8em;
-    font-weight: 600; /* Un poco más grueso */
-    color: var(--gris-oscuro); /* Un color más sobrio que el turquesa */
+/* Pantalla de Login (Overlay) */
+.login-overlay {
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; width: 100%; position: fixed; top: 0; left: 0;
+    background: linear-gradient(135deg, var(--turquesa) 0%, #2c3e50 100%);
+    z-index: 9999;
+}
+.login-card {
+    background: white; padding: 40px; border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center; width: 350px;
+}
+.login-card input {
+    width: 100%; margin-bottom: 15px; padding: 12px;
+    border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+}
+.btn-login {
+    width: 100%; background-color: var(--turquesa);
+    color: white; padding: 12px; border: none;
+    border-radius: 8px; font-size: 1.1em; cursor: pointer;
+    font-weight: bold; margin-top: 10px;
+}
+.btn-login:hover { filter: brightness(0.9); }
+.error-msg { color: #e74c3c; font-size: 0.9em; margin-top: 10px; }
+.back-link { display: block; margin-top: 20px; color: #7f8c8d; font-size: 0.9em; }
+
+/* LAYOUT PRINCIPAL */
+.dashboard-container {
+    display: flex; height: 100vh; overflow: hidden;
 }
 
-/* 2. Título "Bienvenida, Dra. Luna" */
-/* Lo hacemos más sutil y elegante */
-.admin-header h2 {
-    font-size: 1.6em;
-    font-weight: 500; /* Más fino */
-    color: var(--gris-oscuro);
-    margin: 0; /* Quitamos márgenes por defecto */
+/* SIDEBAR (Menú Izquierdo) */
+.sidebar {
+    width: 260px; background-color: #ffffff;
+    border-right: 1px solid #e1e4e8;
+    display: flex; flex-direction: column; padding: 20px; flex-shrink: 0;
+}
+.sidebar-brand {
+    padding-bottom: 30px; border-bottom: 1px solid #f0f0f0; margin-bottom: 20px;
+}
+.sidebar-brand h3 { margin: 0; color: var(--turquesa); font-size: 1.5rem; }
+.sidebar-brand span { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+.sidebar-menu { display: flex; flex-direction: column; gap: 8px; }
+.menu-item {
+    background: transparent; border: none; text-align: left;
+    padding: 12px 15px; border-radius: 8px; cursor: pointer;
+    font-size: 1rem; color: #555; display: flex; align-items: center; gap: 12px;
+    transition: all 0.2s;
+}
+.menu-item:hover { background-color: #f0fbfb; color: var(--turquesa); }
+.menu-item.active {
+    background-color: var(--turquesa); color: white;
+    font-weight: 600; box-shadow: 0 4px 10px rgba(64, 224, 208, 0.3);
+}
+.sidebar-footer { margin-top: auto; }
+.btn-logout {
+    width: 100%; padding: 10px; background: #ffebee; color: #c62828;
+    border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
 }
 
-/* 3. Títulos de sección (Agendar, Próximos, Histórico) */
-/* Les damos una línea inferior para enmarcarlos */
-.admin-columna h3,
-#panel-historico h3 {
-    font-size: 1.3em;
-    font-weight: 600;
-    color: var(--gris-oscuro);
-    padding-bottom: 10px; /* Espacio para la línea */
-    border-bottom: 2px solid var(--turquesa); /* Línea inferior moderna */
-    margin-top: 0; /* Limpiamos márgenes */
-    margin-bottom: 20px; /* Espacio antes del contenido */
-
+/* CONTENIDO PRINCIPAL */
+.main-content {
+    flex: 1; overflow-y: auto; padding: 30px; background-color: #f4f6f8;
 }
+.panel-header h1 { margin-top: 0; font-size: 1.8rem; color: #2c3e50; }
+.panel-header p { color: #666; margin-bottom: 30px; }
 
-/* --- Link "Volver al Home" en Admin --- */
-.back-home-link {
-    text-decoration: none;
-    color: var(--turquesa);
-    font-weight: 500;
-    font-size: 0.9em;
-    transition: all 0.2s ease;
+/* GRID DE KPIs (Tarjetas de colores) */
+.kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin-bottom: 40px;
 }
-.back-home-link:hover {
-    color: var(--gris-oscuro);
-    transform: translateX(-2px);
+.kpi-card {
+    background: white; padding: 25px; border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex; align-items: center; gap: 20px;
+    border-bottom: 4px solid transparent;
 }
+.kpi-card.blue { border-color: #3498db; }
+.kpi-card.green { border-color: #2ecc71; }
+.kpi-card.purple { border-color: #9b59b6; }
 
-/* Spacer para centrar el título (ocupa el mismo espacio que el link) */
-header span {
-    width: 130px; /* Ancho similar al del link para que el h1 quede centrado */
-    display: block;
+.kpi-icon {
+    font-size: 2rem; width: 60px; height: 60px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background-color: #f8f9fa; color: #555;
 }
+.kpi-number { font-size: 2rem; font-weight: bold; margin: 5px 0 0 0; color: #2c3e50; }
+.kpi-text { font-size: 1.2rem; font-weight: 600; margin: 5px 0 0 0; }
 
-/* --- Estilo específico para el botón "Agenda tu turno!" del Hero --- */
-.hero-section .btn {
-    background-color: var(--gris-oscuro); /* Cambiado a gris oscuro para mejor contraste */
-    color: var(--blanco);
-    border: 2px solid var(--blanco); /* Añade un borde blanco para destacarlo */
-    padding: 15px 30px; /* Un poco más grande para darle presencia */
-    font-size: 1.1em; /* Texto un poco más grande */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+/* DISEÑO DIVIDIDO (Formulario vs Tabla) */
+.split-layout { display: grid; grid-template-columns: 350px 1fr; gap: 25px; }
+.card-form {
+    background: white; padding: 25px; border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: fit-content;
 }
-
-.hero-section .btn:hover {
-    background-color: var(--turquesa); /* Vuelve al turquesa al pasar el mouse */
-    border-color: var(--turquesa);
-    color: var(--blanco);
-    transform: translateY(-3px); /* Un poco más de movimiento */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-
+.card-table-container {
+    background: white; padding: 25px; border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-/* --- ESTILOS PARA EL PANEL DE ESTADÍSTICAS --- */
+.full-width { width: 100%; }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
+/* Form Elements modernos */
+.card-form label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; color: #444; }
+.card-form input, .card-form select {
+    width: 100%; padding: 10px; margin-bottom: 15px;
+    border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;
 }
+.card-form input:focus, .card-form select:focus { border-color: var(--turquesa); outline: none; background: white; }
 
-.stat-card {
-    background: var(--blanco);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: var(--sombra);
-    text-align: center;
-    border-bottom: 4px solid var(--turquesa); /* Detalle de color */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* Botones de Acción */
+.btn-action {
+    width: 100%; padding: 12px; background-color: var(--turquesa);
+    color: white; border: none; border-radius: 8px;
+    font-weight: bold; cursor: pointer; transition: transform 0.2s;
 }
+.btn-action:hover { transform: translateY(-2px); }
+.btn-action.secondary { background-color: #34495e; }
+.btn-action.warning { background-color: #f39c12; }
 
-.stat-label {
-    font-size: 0.9em;
-    color: #777;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
+/* Utilidades Tabla */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modern-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.modern-table th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: #888; font-size: 0.85rem; text-transform: uppercase; }
+.modern-table td { padding: 15px 12px; border-bottom: 1px solid #f0f0f0; color: #444; }
+.modern-table tr:hover { background-color: #f8fbff; }
+
+/* Botones Iconos Tabla */
+.btn-icon {
+    border: none; border-radius: 6px; padding: 8px 10px;
+    cursor: pointer; font-size: 0.9em; margin-right: 5px; transition: transform 0.2s;
 }
+.btn-icon:hover { transform: scale(1.1); }
+.btn-icon.edit { background-color: #f1c40f; color: #fff; }
+.btn-icon.delete { background-color: #e74c3c; color: #fff; }
 
-.stat-number {
-    font-size: 2.2em;
-    font-weight: 700;
-    color: var(--gris-oscuro);
+/* Mini lista */
+.mini-list { list-style: none; padding: 0; margin-top: 15px; }
+.mini-list li {
+    padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9rem;
+    display: flex; justify-content: space-between;
 }
+.mini-list li span.money { font-weight: bold; color: #27ae60; }
 
-.stat-number.text-medium {
-    font-size: 1.5em; /* Un poco más chico para texto largo */
-    color: var(--turquesa);
-}
+/* Badges y Sedes */
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background-color: #e3f2fd; color: #1976d2; }
+.badge.gray { background-color: #eee; color: #555; }
+.sede-title { margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 2px solid #eee; font-size: 1.1rem; }
+.sede-title.velez { color: #2980b9; border-color: #2980b9; }
+.sede-title.arboleda { color: #27ae60; border-color: #27ae60; }
+.mb-20 { margin-bottom: 20px; }
+.text-center { text-align: center; }
 
-/* Alineación para la tabla de estadísticas */
-#stats-table th, #stats-table td {
-    text-align: center; /* Centrar los números en la tabla */
+@media (max-width: 900px) {
+    .dashboard-container { flex-direction: column; height: auto; overflow: auto; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; padding: 10px; overflow-x: auto; }
+    .sidebar-menu { flex-direction: row; margin-top: 0; }
+    .split-layout { grid-template-columns: 1fr; }
 }
