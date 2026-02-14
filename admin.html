@@ -26,7 +26,16 @@
 
     <div id="admin-dashboard" class="dashboard-container" style="display: none;">
         
-        <aside class="sidebar">
+        <nav class="mobile-navbar">
+            <button id="mobile-menu-btn" class="hamburger-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="mobile-title">Dra. Luna</span>
+            <div class="mobile-spacer"></div> </nav>
+
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <h3>Dra. Luna</h3>
                 <span>Admin Panel</span>
@@ -72,7 +81,7 @@
                         <div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div>
                         <div class="kpi-info">
                             <h3>Ingresos Este Mes</h3>
-                            <small>(Consultorios + Externos)</small>
+                            <small>(Total General)</small>
                             <p class="kpi-number" id="kpi-ingresos-mes">$0</p>
                         </div>
                     </div>
@@ -137,7 +146,7 @@
                             <input type="number" id="costo" placeholder="0" required>
 
                             <button type="submit" id="btn-save-turno" class="btn-action">Agendar Turno</button>
-                            <button type="button" id="btn-cancel-edit" class="btn-action secondary" style="display: none; margin-top: 10px;">Cancelar Edición</button>
+                            <button type="button" id="btn-cancel-edit" class="btn-action secondary" style="display: none; margin-top: 10px;">Cancelar</button>
                             
                             <p id="success-turno" class="success-msg"></p>
                             <p id="error-turno" class="error-msg"></p>
@@ -145,7 +154,6 @@
                     </div>
 
                     <div class="agenda-tables-container">
-                        
                         <div class="card-table-container mb-20">
                             <h3 class="sede-title velez">📍 Vélez Sarsfield</h3>
                             <div class="table-responsive">
@@ -181,7 +189,6 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
@@ -240,7 +247,6 @@
 
                         <div class="card-table-container" style="margin-top: 20px;">
                             <h3><i class="fas fa-home"></i> Ingresos Consultorios Propios</h3>
-                            <p class="text-muted small">(Vélez Sarsfield + Julio Arboleda)</p>
                             <table class="modern-table">
                                 <thead>
                                     <tr>
