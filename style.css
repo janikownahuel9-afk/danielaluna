@@ -1,23 +1,34 @@
 /* =========================================
-   1. VARIABLES GLOBALES Y RESET
+   1. VARIABLES GLOBALES Y RESET (AGREGAR ESTO AL INICIO)
    ========================================= */
 :root {
     --turquesa: #40E0D0;
     --turquesa-dark: #33b5a8;
-    --gris-claro: #f4f4f4; /* Fondo Landing */
-    --gris-fondo: #f0f2f5; /* Fondo Admin */
+    --gris-claro: #f4f4f4;
+    --gris-fondo: #f0f2f5;
     --gris-oscuro: #333;
     --blanco: #ffffff;
     --texto: #2c3e50;
     --sombra: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+/* --- ESTO ES LO QUE ARREGLA EL DESPLAZAMIENTO --- */
+* {
+    box-sizing: border-box; /* El truco mágico */
+}
+
+html, body {
+    overflow-x: hidden; /* Evita cualquier scroll lateral accidental */
+    width: 100%;
     margin: 0;
     padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
     color: var(--gris-oscuro);
+    background-color: var(--gris-claro); /* Color base */
 }
 
 h1, h2, h3 { color: var(--turquesa); }
@@ -344,3 +355,4 @@ input:focus, select:focus { outline: 2px solid var(--turquesa); background: whit
 
     .btn-icon { padding: 8px 12px; }
 }
+
