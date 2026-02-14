@@ -3,156 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Dra. Luna</title>
+    <title>Panel Dra. Luna - Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
+<body class="admin-body">
 
-    <header>
-        <a href="index.html" class="back-home-link">← Volver al Home</a>
-        <h1>Panel de Administración</h1>
-        <span></span>
-    </header>
-
-    <main>
-        <section id="login-section" class="card">
-            <h2>Iniciar Sesión</h2>
+    <section id="login-section" class="login-overlay">
+        <div class="login-card">
+            <h2>Consultorio Luna</h2>
+            <p>Acceso Administrativo</p>
             <form id="login-form">
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
-                
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" required>
-                
-                <button type="submit" class="btn">Entrar</button>
+                <input type="email" id="email" placeholder="Usuario" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit" class="btn-login">Ingresar</button>
             </form>
             <p id="error-login" class="error-msg"></p>
-        </section>
+            <a href="index.html" class="back-link">Volver al sitio web</a>
+        </div>
+    </section>
 
-        <section id="admin-dashboard" style="display: none;">
+    <div id="admin-dashboard" class="dashboard-container" style="display: none;">
+        
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h3>Dra. Luna</h3>
+                <span>Admin Panel</span>
+            </div>
             
-            <div class="admin-header">
-                <h2>Bienvenida, Dra. Luna</h2>
-                <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
+            <nav class="sidebar-menu">
+                <button class="menu-item active" data-target="view-resumen">
+                    <i class="fas fa-chart-pie"></i> Resumen
+                </button>
+                <button class="menu-item" data-target="view-agenda">
+                    <i class="fas fa-calendar-check"></i> Agenda de Turnos
+                </button>
+                <button class="menu-item" data-target="view-finanzas">
+                    <i class="fas fa-wallet"></i> Finanzas & Pagos
+                </button>
+                <button class="menu-item" data-target="view-pacientes">
+                    <i class="fas fa-users"></i> Histórico Pacientes
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
             </div>
+        </aside>
 
-            <div class="admin-tabs">
-                <button id="tab-turnos" class="tab-btn active">Agenda</button>
-                <button id="tab-facturacion" class="tab-btn">Facturación Externa</button> <button id="tab-historico" class="tab-btn">Histórico</button>
-                <button id="tab-estadisticas" class="tab-btn">Estadísticas</button>
-            </div>
+        <main class="main-content">
+            
+            <section id="view-resumen" class="view-panel active">
+                <header class="panel-header">
+                    <h1>Hola, Daniela 👋</h1>
+                    <p>Resumen de actividad del consultorio.</p>
+                </header>
 
-            <div id="panel-turnos" class="tab-panel">
-                <div class="admin-columna">
-                    <h3>Agendar Nuevo Turno</h3>
-                    <form id="turno-form" class="card">
-                        <label for="paciente">Nombre y Apellido Paciente:</label>
-                        <input type="text" id="paciente" required>
+                <div class="kpi-grid">
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon"><i class="fas fa-calendar-day"></i></div>
+                        <div class="kpi-info">
+                            <h3>Turnos Hoy</h3>
+                            <p class="kpi-number" id="kpi-turnos-hoy">0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card green">
+                        <div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="kpi-info">
+                            <h3>Ingresos Este Mes</h3>
+                            <small>(Consultorios + Externos)</small>
+                            <p class="kpi-number" id="kpi-ingresos-mes">$0</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-icon"><i class="fas fa-user-injured"></i></div>
+                        <div class="kpi-info">
+                            <h3>Próximo Paciente</h3>
+                            <p class="kpi-text" id="kpi-prox-paciente">-</p>
+                            <small id="kpi-prox-hora">-</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                        <label for="estudio">Tipo de Estudio:</label>
-                        <select id="estudio" required>
-                            <option value="" disabled selected>Selecciona un estudio...</option>
-                            <option value="Ecografía Abdominal">Ecografía Abdominal</option>
-                            <option value="Ecografía Ginecológica">Ecografía Ginecológica</option>
-                            <option value="Ecografía Obstétrica">Ecografía Obstétrica</option>
-                            <option value="Ecografía 4D/5D">Ecografía 4D/5D</option>
-                            <option value="Ecografía Mamaria">Ecografía Mamaria</option>
-                            <option value="Ecografía Musculoesquelética">Ecografía Musculoesquelética</option>
-                            <option value="Doppler Vascular">Doppler Vascular</option>
-                            <option value="Ecografía Pediátrica">Ecografía Pediátrica</option>
-                            <option value="Otro">Otro (especificar)</option>
-                        </select>
+            <section id="view-agenda" class="view-panel" style="display: none;">
+                <header class="panel-header">
+                    <h1>Agenda de Turnos</h1>
+                </header>
+                
+                <div class="split-layout">
+                    <div class="card-form">
+                        <h3 id="form-title"><i class="fas fa-plus-circle"></i> Nuevo Turno</h3>
+                        <form id="turno-form">
+                            <input type="hidden" id="edit-id">
 
-                        <label for="costo">Costo ($):</label>
-                        <input type="number" id="costo" min="0" placeholder="Ej: 5000" required>
-
-                        <label for="fecha">Fecha (Calendario):</label>
-                        <input type="date" id="fecha" required>
-
-                        <label for="hora">Hora (cada 15 min):</label>
-                        <select id="hora" required>
+                            <label>Sede (Consultorio)</label>
+                            <select id="sede" required>
+                                <option value="" disabled selected>Seleccionar Sede...</option>
+                                <option value="Consultorio Vélez Sarsfield">Consultorio Vélez Sarsfield</option>
+                                <option value="Consultorio Julio Arboleda">Consultorio Julio Arboleda</option>
                             </select>
 
-                        <button type="submit" class="btn">Agendar Turno</button>
-                        <p id="error-turno" class="error-msg"></p>
-                        <p id="success-turno" class="success-msg"></p>
-                    </form>
-                </div>
-                <div class="admin-columna">
-                    <h3>Próximos Turnos</h3>
-                    <div class="tabla-container card">
-                        <table id="turnos-table">
-                            <thead>
-                                <tr>
-                                    <th>Paciente</th>
-                                    <th>Estudio</th>
-                                    <th>Fecha y Hora</th>
-                                    <th>Costo</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="turnos-tbody"></tbody>
-                        </table>
+                            <label>Paciente</label>
+                            <input type="text" id="paciente" placeholder="Nombre completo" required>
+                            
+                            <label>Estudio</label>
+                            <select id="estudio" required>
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option value="Ecografía Abdominal">Ecografía Abdominal</option>
+                                <option value="Ecografía Ginecológica">Ecografía Ginecológica</option>
+                                <option value="Ecografía Obstétrica">Ecografía Obstétrica</option>
+                                <option value="Ecografía 4D/5D">Ecografía 4D/5D</option>
+                                <option value="Ecografía Mamaria">Ecografía Mamaria</option>
+                                <option value="Ecografía Musculoesquelética">Ecografía Musculoesquelética</option>
+                                <option value="Doppler Vascular">Doppler Vascular</option>
+                                <option value="Ecografía Pediátrica">Ecografía Pediátrica</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            
+                            <div class="row-2">
+                                <div>
+                                    <label>Fecha</label>
+                                    <input type="date" id="fecha" required>
+                                </div>
+                                <div>
+                                    <label>Hora</label>
+                                    <select id="hora" required></select>
+                                </div>
+                            </div>
+
+                            <label>Costo ($)</label>
+                            <input type="number" id="costo" placeholder="0" required>
+
+                            <button type="submit" id="btn-save-turno" class="btn-action">Agendar Turno</button>
+                            <button type="button" id="btn-cancel-edit" class="btn-action secondary" style="display: none; margin-top: 10px;">Cancelar Edición</button>
+                            
+                            <p id="success-turno" class="success-msg"></p>
+                            <p id="error-turno" class="error-msg"></p>
+                        </form>
+                    </div>
+
+                    <div class="agenda-tables-container">
+                        
+                        <div class="card-table-container mb-20">
+                            <h3 class="sede-title velez">📍 Vélez Sarsfield</h3>
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Paciente</th>
+                                            <th>Estudio</th>
+                                            <th>Costo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="turnos-velez-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-table-container">
+                            <h3 class="sede-title arboleda">📍 Julio Arboleda</h3>
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Paciente</th>
+                                            <th>Estudio</th>
+                                            <th>Costo</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="turnos-arboleda-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div id="panel-facturacion" class="tab-panel" style="display: none;">
-                <div class="admin-columna">
-                    <h3>Registrar Pago Externo</h3>
-                    <form id="facturacion-form" class="card">
-                        <label for="sede-externa">Sede:</label>
-                        <select id="sede-externa" required>
-                            <option value="" disabled selected>Selecciona la sede...</option>
-                            <option value="Ospia">Ospia (Pago Mensual)</option>
-                            <option value="Ferreyra">Ferreyra (Pago Diario)</option>
-                            <option value="Sanatorio Allende">Maternidad</option>
-                        </select>
+            <section id="view-finanzas" class="view-panel" style="display: none;">
+                <header class="panel-header">
+                    <h1>Finanzas y Pagos Externos</h1>
+                </header>
 
-                        <label for="fecha-externa">Fecha del cobro/trabajo:</label>
-                        <input type="date" id="fecha-externa" required>
+                <div class="split-layout">
+                    <div class="card-form">
+                        <h3><i class="fas fa-hand-holding-usd"></i> Registrar Ingreso Externo</h3>
+                        <p class="text-muted">Pagos de Ospia, Ferreyra, etc.</p>
+                        
+                        <form id="facturacion-form">
+                            <label>Sede / Origen</label>
+                            <select id="sede-externa" required>
+                                <option value="" disabled selected>Seleccionar sede...</option>
+                                <option value="Ospia">Ospia</option>
+                                <option value="Ferreyra">Ferreyra</option>
+                            </select>
 
-                        <label for="monto-externa">Monto Cobrado ($):</label>
-                        <input type="number" id="monto-externa" min="0" required>
+                            <label>Fecha de Cobro</label>
+                            <input type="date" id="fecha-externa" required>
 
-                        <label for="notas-externa">Notas (Opcional):</label>
-                        <input type="text" id="notas-externa" placeholder="Ej: Pago de guardia, horas extra...">
+                            <label>Monto Cobrado ($)</label>
+                            <input type="number" id="monto-externa" placeholder="0" required>
 
-                        <button type="submit" class="btn">Registrar Ingreso</button>
-                        <p id="error-facturacion" class="error-msg"></p>
-                        <p id="success-facturacion" class="success-msg"></p>
-                    </form>
-                </div>
-                
-                <div class="admin-columna">
-                    <h3>Últimos Registros Externos</h3>
-                    <div class="tabla-container card">
-                        <table id="facturacion-table">
-                            <thead>
-                                <tr>
-                                    <th>Sede</th>
-                                    <th>Fecha</th>
-                                    <th>Monto</th>
-                                    <th>Notas</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="facturacion-tbody"></tbody>
-                        </table>
+                            <label>Notas (Opcional)</label>
+                            <input type="text" id="notas-externa" placeholder="Detalles extra...">
+
+                            <button type="submit" class="btn-action secondary">Registrar Ingreso</button>
+                            <p id="success-facturacion" class="success-msg"></p>
+                        </form>
+
+                        <div class="mini-list-container">
+                            <h4>Últimos Cargados</h4>
+                            <ul id="lista-ultimos-externos" class="mini-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="stats-overview">
+                        <div class="card-table-container">
+                            <h3><i class="fas fa-building"></i> Total por Sede (Externos)</h3>
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Sede</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-externos-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="card-table-container" style="margin-top: 20px;">
+                            <h3><i class="fas fa-home"></i> Ingresos Consultorios Propios</h3>
+                            <p class="text-muted small">(Vélez Sarsfield + Julio Arboleda)</p>
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Pacientes</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-tbody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div id="panel-historico" class="tab-panel" style="display: none;">
-                <h3>Histórico de Pacientes (Consultorio)</h3>
-                <div class="tabla-container card">
-                    <table id="historico-table">
+            <section id="view-pacientes" class="view-panel" style="display: none;">
+                <header class="panel-header">
+                    <h1>Historial de Pacientes</h1>
+                </header>
+                <div class="card-table-container full-width">
+                    <table class="modern-table">
                         <thead>
                             <tr>
+                                <th>Fecha</th>
+                                <th>Sede</th>
                                 <th>Paciente</th>
                                 <th>Estudio</th>
-                                <th>Fecha y Hora</th>
                                 <th>Costo</th>
                                 <th>Acciones</th>
                             </tr>
@@ -160,61 +275,11 @@
                         <tbody id="historico-tbody"></tbody>
                     </table>
                 </div>
-            </div>
+            </section>
 
-            <div id="panel-estadisticas" class="tab-panel" style="display: none;">
-                
-                <h3>Resumen General (Consultorio Propio)</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <span class="stat-label">Ingresos Totales</span>
-                        <span class="stat-number" id="stat-total-dinero">$0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Pacientes Atendidos</span>
-                        <span class="stat-number" id="stat-total-pacientes">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Estudio Más Solicitado</span>
-                        <span class="stat-number text-medium" id="stat-top-estudio">-</span>
-                    </div>
-                </div>
-
-                <h3>Ingresos Centros Externos (Ospia / Ferreyra)</h3>
-                <div class="tabla-container card">
-                    <table id="stats-externos-table">
-                        <thead>
-                            <tr>
-                                <th>Año</th>
-                                <th>Mes</th>
-                                <th>Sede</th>
-                                <th>Total Generado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stats-externos-tbody"></tbody>
-                    </table>
-                </div>
-
-                <h3>Desglose Mensual (Consultorio Propio)</h3>
-                <div class="tabla-container card">
-                    <table id="stats-table">
-                        <thead>
-                            <tr>
-                                <th>Año</th>
-                                <th>Mes</th>
-                                <th>Pacientes</th>
-                                <th>Total Generado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stats-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-        </section>
-    </main>
+        </main>
+    </div>
 
     <script src="admin.js"></script>
 </body>
 </html>
-
