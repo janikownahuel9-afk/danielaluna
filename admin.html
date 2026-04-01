@@ -201,14 +201,14 @@
                 <div class="split-layout">
                     <div class="card-form">
                         <h3><i class="fas fa-hand-holding-usd"></i> Registrar Ingreso Externo</h3>
-                        <p class="text-muted">Pagos de Ospia, Ferreyra, etc.</p>
+                        <p class="text-muted">Pagos de Ospia, Vita, etc.</p>
                         
                         <form id="facturacion-form">
                             <label>Sede / Origen</label>
                             <select id="sede-externa" required>
                                 <option value="" disabled selected>Seleccionar sede...</option>
                                 <option value="Ospia">Ospia</option>
-                                <option value="Ferreyra">Ferreyra</option>
+                                <option value="Vita">Vita</option>
                             </select>
 
                             <label>Fecha de Cobro</label>
@@ -222,6 +222,7 @@
 
                             <button type="submit" class="btn-action secondary">Registrar Ingreso</button>
                             <p id="success-facturacion" class="success-msg"></p>
+                            <p id="error-facturacion" class="error-msg"></p>
                         </form>
 
                         <div class="mini-list-container">
@@ -231,13 +232,27 @@
                     </div>
 
                     <div class="stats-overview">
-                        <div class="card-table-container">
-                            <h3><i class="fas fa-building"></i> Total por Sede (Externos)</h3>
+                        <div class="card-table-container" style="margin-bottom: 20px;">
+                            <h3><i class="fas fa-home"></i> Ingresos Consultorios Propios</h3>
                             <table class="modern-table">
                                 <thead>
                                     <tr>
                                         <th>Mes</th>
                                         <th>Sede</th>
+                                        <th>Pacientes</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="card-table-container" style="margin-bottom: 20px;">
+                            <h3><i class="fas fa-building"></i> Ingresos Centros Externos</h3>
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
                                         <th>Total</th>
                                     </tr>
                                 </thead>
@@ -245,17 +260,16 @@
                             </table>
                         </div>
 
-                        <div class="card-table-container" style="margin-top: 20px;">
-                            <h3><i class="fas fa-home"></i> Ingresos Consultorios Propios</h3>
+                        <div class="card-table-container">
+                            <h3><i class="fas fa-wallet"></i> Total General (Propios + Externos)</h3>
                             <table class="modern-table">
                                 <thead>
                                     <tr>
                                         <th>Mes</th>
-                                        <th>Pacientes</th>
-                                        <th>Total</th>
+                                        <th>Total Facturado</th>
                                     </tr>
                                 </thead>
-                                <tbody id="stats-tbody"></tbody>
+                                <tbody id="stats-total-final-tbody"></tbody>
                             </table>
                         </div>
                     </div>
