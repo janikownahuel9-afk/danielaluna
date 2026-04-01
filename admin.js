@@ -105,7 +105,7 @@ async function cargarDatosGenerales() {
     }
 }
 
-// --- RENDER AGENDA (CON DATA-LABELS PARA MÓVIL) ---
+// --- RENDER AGENDA ---
 function renderAgenda(turnos) {
     turnosVelezTbody.innerHTML = '';
     turnosArboledaTbody.innerHTML = '';
@@ -128,7 +128,6 @@ function renderAgenda(turnos) {
         const dia = fecha.toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit'});
 
         const tr = document.createElement('tr');
-        // AQUI ESTA LA MAGIA: data-label
         tr.innerHTML = `
             <td data-label="Hora/Fecha"><strong>${hora}</strong> <small>(${dia})</small></td>
             <td data-label="Paciente">${t.nombre_paciente}</td>
@@ -283,47 +282,114 @@ window.eliminarRegistro = async (id, tabla) => {
     }
 };
 
-// --- FINANZAS ---
+// --- FINANZAS (CON DIVISION VELEZ/ARBOLEDA Y MANEJO DE ERRORES) ---
 function renderFinanzas(turnos, externos) {
-    let statsPropio = {};
+    let statsMensual = {}; 
+
+    // Procesar ingresos de consultorios propios
     turnos.forEach(t => {
         const d = new Date(t.fecha_hora);
-        const key = `${d.getFullYear()}-${d.getMonth() + 1}`; 
-        if(!statsPropio[key]) statsPropio[key] = {pacientes: 0, total: 0, mes: d.getMonth(), anio: d.getFullYear()};
-        statsPropio[key].pacientes++;
-        statsPropio[key].total += Number(t.costo);
+        const anio = d.getFullYear();
+        const mes = d.getMonth();
+        const key = `${anio}-${mes}`;
+
+        if(!statsMensual[key]) {
+            statsMensual[key] = { 
+                anio, 
+                mes, 
+                velez: { pacientes: 0, total: 0 }, 
+                arboleda: { pacientes: 0, total: 0 }, 
+                externos: { total: 0 }, 
+                totalGeneral: 0 
+            };
+        }
+        
+        if (t.sede === 'Consultorio Julio Arboleda') {
+            statsMensual[key].arboleda.pacientes++;
+            statsMensual[key].arboleda.total += Number(t.costo);
+        } else {
+            statsMensual[key].velez.pacientes++;
+            statsMensual[key].velez.total += Number(t.costo);
+        }
+        statsMensual[key].totalGeneral += Number(t.costo);
     });
 
-    statsTbody.innerHTML = '';
-    Object.values(statsPropio).sort((a,b) => b.anio - a.anio || b.mes - a.mes).forEach(s => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td data-label="Mes">${obtenerNombreMes(s.mes)} ${s.anio}</td>
-            <td data-label="Pacientes">${s.pacientes}</td>
-            <td data-label="Total"><strong>$${s.total.toLocaleString()}</strong></td>
-        `;
-        statsTbody.appendChild(tr);
-    });
-
-    let statsExterno = {};
+    // Procesar ingresos de centros externos
     externos.forEach(e => {
-        const [anio, mes, dia] = e.fecha.split('-');
-        const key = `${anio}-${mes}-${e.sede}`;
-        if(!statsExterno[key]) statsExterno[key] = {total: 0, mes: parseInt(mes)-1, anio: anio, sede: e.sede};
-        statsExterno[key].total += Number(e.monto);
+        const [anioStr, mesStr, dia] = e.fecha.split('-');
+        const anio = parseInt(anioStr);
+        const mes = parseInt(mesStr) - 1; 
+        const key = `${anio}-${mes}`;
+
+        if(!statsMensual[key]) {
+            statsMensual[key] = { 
+                anio, 
+                mes, 
+                velez: { pacientes: 0, total: 0 }, 
+                arboleda: { pacientes: 0, total: 0 }, 
+                externos: { total: 0 }, 
+                totalGeneral: 0 
+            };
+        }
+        statsMensual[key].externos.total += Number(e.monto);
+        statsMensual[key].totalGeneral += Number(e.monto);
     });
 
-    statsExternosTbody.innerHTML = '';
-    Object.values(statsExterno).sort((a,b) => b.anio - a.anio || b.mes - a.mes).forEach(s => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td data-label="Mes">${obtenerNombreMes(s.mes)} ${s.anio}</td>
-            <td data-label="Sede"><span class="badge">${s.sede}</span></td>
-            <td data-label="Total"><strong>$${s.total.toLocaleString()}</strong></td>
-        `;
-        statsExternosTbody.appendChild(tr);
+    const mesesOrdenados = Object.values(statsMensual).sort((a,b) => b.anio - a.anio || b.mes - a.mes);
+
+    // Renderizar tabla propios dividida por sede
+    statsTbody.innerHTML = '';
+    mesesOrdenados.forEach(s => {
+        if (s.velez.total > 0 || s.velez.pacientes > 0) {
+            const trV = document.createElement('tr');
+            trV.innerHTML = `
+                <td data-label="Mes">${obtenerNombreMes(s.mes)} ${s.anio}</td>
+                <td data-label="Sede"><span class="badge gray">Vélez</span></td>
+                <td data-label="Pacientes">${s.velez.pacientes}</td>
+                <td data-label="Total"><strong>$${s.velez.total.toLocaleString()}</strong></td>
+            `;
+            statsTbody.appendChild(trV);
+        }
+        if (s.arboleda.total > 0 || s.arboleda.pacientes > 0) {
+            const trA = document.createElement('tr');
+            trA.innerHTML = `
+                <td data-label="Mes">${obtenerNombreMes(s.mes)} ${s.anio}</td>
+                <td data-label="Sede"><span class="badge gray">Arboleda</span></td>
+                <td data-label="Pacientes">${s.arboleda.pacientes}</td>
+                <td data-label="Total"><strong>$${s.arboleda.total.toLocaleString()}</strong></td>
+            `;
+            statsTbody.appendChild(trA);
+        }
     });
-    
+
+    // Renderizar tabla externos unificados
+    statsExternosTbody.innerHTML = '';
+    mesesOrdenados.forEach(s => {
+        if (s.externos.total > 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td data-label="Mes">${obtenerNombreMes(s.mes)} ${s.anio}</td>
+                <td data-label="Total"><strong>$${s.externos.total.toLocaleString()}</strong></td>
+            `;
+            statsExternosTbody.appendChild(tr);
+        }
+    });
+
+    // Renderizar tabla total general
+    const statsTotalFinalTbody = document.getElementById('stats-total-final-tbody');
+    if(statsTotalFinalTbody) {
+        statsTotalFinalTbody.innerHTML = '';
+        mesesOrdenados.forEach(s => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td data-label="Mes">${obtenerNombreMes(s.mes)} ${s.anio}</td>
+                <td data-label="Total Facturado"><strong style="color: var(--turquesa); font-size: 1.1em;">$${s.totalGeneral.toLocaleString()}</strong></td>
+            `;
+            statsTotalFinalTbody.appendChild(tr);
+        });
+    }
+
+    // Renderizar mini lista
     listaUltimosExternos.innerHTML = '';
     externos.slice(0, 5).forEach(e => {
         const li = document.createElement('li');
@@ -380,20 +446,36 @@ loginForm.addEventListener('submit', async (e) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { errorLogin.innerText = "Credenciales incorrectas"; } else { initDashboard(); }
 });
+
 logoutBtn.addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
+
 facturacionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const s = document.getElementById('sede-externa').value;
     const f = document.getElementById('fecha-externa').value;
     const m = document.getElementById('monto-externa').value;
     const n = document.getElementById('notas-externa').value;
-    const {error} = await supabase.from('facturacion_externa').insert({sede: s, fecha: f, monto: m, notas: n});
-    if(!error) {
-        document.getElementById('success-facturacion').innerText = "Registrado!";
+    
+    const { error } = await supabase.from('facturacion_externa').insert({
+        sede: s, 
+        fecha: f, 
+        monto: parseFloat(m), 
+        notas: n
+    });
+
+    if (!error) {
+        document.getElementById('success-facturacion').innerText = "¡Registrado!";
+        if (document.getElementById('error-facturacion')) document.getElementById('error-facturacion').innerText = "";
         facturacionForm.reset();
         document.getElementById('fecha-externa').valueAsDate = new Date();
         cargarDatosGenerales();
-        setTimeout(()=> document.getElementById('success-facturacion').innerText = "", 2000);
+        setTimeout(() => document.getElementById('success-facturacion').innerText = "", 2000);
+    } else {
+        console.error("Error de Supabase:", error);
+        if (document.getElementById('error-facturacion')) {
+            document.getElementById('error-facturacion').innerText = "Error: " + error.message;
+        }
+        document.getElementById('success-facturacion').innerText = "";
     }
 });
 
@@ -417,4 +499,3 @@ function formatearFechaCorta(fechaStr) {
     const [y,m,d] = fechaStr.split('-');
     return `${d}/${m}`;
 }
-
